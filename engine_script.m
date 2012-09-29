@@ -1,3 +1,5 @@
+8=====D
+
 %Nitrous Oxide Parameters
 pCrit = 72.51;     % critical pressure, Bar Abs 
 rhoCrit = 452.0;   % critical density, kg/m3 
@@ -37,7 +39,7 @@ subplot(2,1,1)
 %plot(t,mdot,'r')
 plot(t,N2O_Tank_Time(7,:),'r', ...
     t,Comb_Chamber_Time(2,:),'k'); 
-subplot(2,1,2)  
+subplot(2,1,2)
 plot(t,N2O_Tank_Time(11,:),'r', ...
     t,Comb_Chamber_Time(3,:),'k');
 %subplot(3,1,3); hold on;  
