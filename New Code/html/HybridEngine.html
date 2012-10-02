@@ -1,0 +1,123 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>HybridEngine</title><meta name="generator" content="MATLAB 7.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2012-10-01"><meta name="DC.source" content="HybridEngine.m"><style type="text/css">
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows. */ 
+p,h1,h2,div.content div {
+  max-width: 600px;
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">classdef</span> HybridEngine
+    <span class="comment">%HYBRIDENGINE This class is meant to encapsulate all the aspects of a</span>
+    <span class="comment">%designed hybrid engine, and methods to calculate derived properties.</span>
+    <span class="comment">%   Detailed explanation goes here</span>
+
+    <span class="keyword">properties</span>
+        nozzle
+        oxidizer_tank
+        combustion_chamber
+    <span class="keyword">end</span>
+
+    <span class="keyword">methods</span>
+        <span class="keyword">function</span> obj=set.nozzle(obj,noz)
+            assert(class(noz)==<span class="string">'Nozzle'</span>, <span class="string">'The nozzle must be input as a Nozzle object, see Nozzle.m'</span>)
+        <span class="keyword">end</span>
+        <span class="keyword">function</span> obj=set.oxidizer_tank(obj,ox_tank)
+            assert(class(ox_tank)==<span class="string">'OxidizerTank'</span>, <span class="string">'The oxidizer tank must be input as an OxidizerTank object, see OxidizerTank.m'</span>)
+        <span class="keyword">end</span>
+        <span class="keyword">function</span> obj=set.combustion_chamber(obj,comb_cham)
+            assert(class(comb_cham)==<span class="string">'CombustionChamber'</span>, <span class="string">'The combustion chamber must be input as a CombustionChamber object, see CombustionChamber.m'</span>)
+        <span class="keyword">end</span>
+        <span class="keyword">function</span> dynamic_properties=simulate(obj)
+            dynamic_properties=obj;
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+
+<span class="keyword">end</span>
+</pre><p class="footer"><br>
+      Published with MATLAB&reg; 7.13<br></p></div><!--
+##### SOURCE BEGIN #####
+classdef HybridEngine
+    %HYBRIDENGINE This class is meant to encapsulate all the aspects of a
+    %designed hybrid engine, and methods to calculate derived properties.
+    %   Detailed explanation goes here
+    
+    properties
+        nozzle
+        oxidizer_tank
+        combustion_chamber
+    end
+    
+    methods
+        function obj=set.nozzle(obj,noz)
+            assert(class(noz)=='Nozzle', 'The nozzle must be input as a Nozzle object, see Nozzle.m')
+        end
+        function obj=set.oxidizer_tank(obj,ox_tank)
+            assert(class(ox_tank)=='OxidizerTank', 'The oxidizer tank must be input as an OxidizerTank object, see OxidizerTank.m')
+        end
+        function obj=set.combustion_chamber(obj,comb_cham)
+            assert(class(comb_cham)=='CombustionChamber', 'The combustion chamber must be input as a CombustionChamber object, see CombustionChamber.m')
+        end
+        function dynamic_properties=simulate(obj)
+            dynamic_properties=obj;
+        end
+    end
+    
+end
+##### SOURCE END #####
+--></body></html>
