@@ -18,7 +18,7 @@ classdef Nozzle
         end
         function obj=set.length(obj,l_noz)
             assert(strcmp(class(l_noz),'double')==1, 'The nozzle length must be a real number')
-            obj.length=l_noz;
+            obj.expansion_ratio=ratio;
         end
     end
     

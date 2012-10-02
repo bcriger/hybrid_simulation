@@ -11,17 +11,17 @@ classdef HybridEngine
     
     methods
         function obj=set.nozzle(obj,noz)
-            assert(strcmp(class(noz),'Nozzle')==1, ...
+            assert(class(noz)=='Nozzle', ...
                 'The nozzle must be input as a Nozzle object, see Nozzle.m')
             obj.nozzle=noz;
         end
         function obj=set.oxidizer_tank(obj,ox_tank)
-            assert(strcmp(class(ox_tank),'OxidizerTank')==1, ...
+            assert(class(ox_tank)=='OxidizerTank', ...
                 'The oxidizer tank must be input as an OxidizerTank object, see OxidizerTank.m')
             obj.oxidizer_tank=ox_tank;
         end
         function obj=set.combustion_chamber(obj,comb_cham)
-            assert(strcmp(class(comb_cham),'CombustionChamber')==1,...
+            assert(class(comb_cham)=='CombustionChamber',...
                 'The combustion chamber must be input as a CombustionChamber object, see CombustionChamber.m')
             obj.combustion_chamber=comb_cham;
         end
