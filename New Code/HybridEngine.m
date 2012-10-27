@@ -25,7 +25,7 @@ classdef HybridEngine
                 'The combustion chamber must be input as a CombustionChamber object, see CombustionChamber.m')
             obj.combustion_chamber=comb_cham;
         end
-        function dynamic_properties=simulate(obj)
+        function dynamic_properties=simulate_burn(obj)
             dynamic_properties=obj;
         end
     end

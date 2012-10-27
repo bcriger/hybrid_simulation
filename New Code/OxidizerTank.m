@@ -4,13 +4,13 @@ classdef OxidizerTank
     properties
         initial_pressure
         internal_volume
-        initial_ox_density
-        ullage
+        initial_ox_density = 0.74 %N_2O at 1000 psi, 300 K 
+        ullage = 0.01 %Default ullage
     end
     
     methods
         function obj=set.initial_pressure(obj,p_init)
-            assert(strcmp(class(p_init),'double')==1, 'The initial pressure must be a real number')
+            assert(isfloat(p_init), 'The initial pressure must be a real number')
             obj.initial_pressure=p_init;
         end
         function obj=set.internal_volume(obj,v_int)
