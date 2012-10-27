@@ -1,5 +1,3 @@
-%I am altered!!!
-
 %Nitrous Oxide Parameters
 pCrit = 72.51;     % critical pressure, Bar Abs 
 rhoCrit = 452.0;   % critical density, kg/m3 
