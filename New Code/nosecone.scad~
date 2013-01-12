@@ -1,0 +1,79 @@
+// Tangent ogive nose cone with spherical tip
+// Threaded detachable base for printability and use as a small payload bay
+// By bld: http://www.thingiverse.com/bld
+// Modifications by bcriger: http://www.thingiverse.com/bcriger
+// License: Creative Commons Attribution Share-Alike 3.0: http://creativecommons.org/licenses/by-sa/3.0/
+//
+// Equations from: http://en.wikipedia.org/wiki/Nose_cone_design#Tangent_ogive
+// Thread library by syvwlch: http://www.thingiverse.com/thing:8793
+//
+// Parameters
+// ==========
+// bodyid: body tube inner diameter
+// bodyod: body tube outer diameter
+// noseconeheight
+// wallt: wall thickness
+// bottomt: thickness of base bottom
+// pitch: thread pitch
+// holed: diameter of holes in base for attaching shock cord
+// reinforced: diameter of reinforcement for shock cord
+// threadd: outer diameter of threads
+// noser: radius of curvature of spherical nose
+//
+// Modules
+// =======
+// ogivenosecone: threaded ogive nosecone
+// base: threaded base that screws onto nosecone
+// fitcheck: fast printing test piece to check fit into body tube
+bodyid=40.25;
+bodyod=41.5;
+noseconeheight=100;
+wallt=1.25;
+bottomt=2;
+pitch=5;
+holed=3;
+reinforced=3;
+threadd=32;
+noser=1;
+threaded=1;
+curvepoints=1000;
+pi=3.1415926535897932384626;
+
+//ogivenosecone();
+VKplug();
+//fitcheck();
+
+// Fit check: quick print to test fit in body tube
+module fitcheck(){
+	difference(){
+		union(){
+			cylinder(r=bodyod/2,h=wallt);
+			cylinder(r=bodyid/2,h=bodyid/4);
+		}
+		translate([0,0,-1]) cylinder(r=bodyid/2-wallt,h=bodyid/2+2);
+	}
+}
+
+function ogiverho(r,l) = (r*r+l*l)/(2*r);
+function ogivey(rho,x,r,l) = sqrt(rho*rho-pow(l-x,2))+r-rho;
+function ogivenosex0(r,l,rho,rn) = l-sqrt(pow(rho-rn,2)-pow(rho-r,2));
+function ogivenoseyt(rn,rho,r) = rn*(rho-r)/(rho-rn);
+function ogivenosext(x0,rn,yt) = x0-sqrt(rn*rn-yt*yt);
+
+function VKt(x,L) = acos(1-2*x/L);
+function VKy(x,R,L) = R*sqrt((VKt(x,L)-sin(2*VKt(x,L))/2)/pi);
+
+module VKplug(R=bodyod/2,L=noseconeheight,points=2){
+	union(){
+		for(x=[0:L/points:L-L/points]){
+			rotate_extrude($fn=100)
+			rotate([0,90,0])polygon([[x,0],[x,VKy(x,R,L)],[x+L/points,VKy(x+L/points,R,L)],[x+L/points,0]]);
+		} 
+	}
+}
+module base(thickness=wallt, od=bodyid){
+	difference(){
+		cylinder(r=od/2,h=od);
+		cylinder(r=od/2-thickness,h=od);
+	}
+}

@@ -1,0 +1,151 @@
+import csv
+import numpy as np
+import itertools as it
+import matplotlib.pyplot as plt
+import scipy.integrate as scint 
+
+def smooth(x,window_len=11,window='hanning'):
+    """smooth the data using a window with requested size.
+    This method is based on the convolution of a scaled window with the signal.
+    The signal is prepared by introducing reflected copies of the signal 
+    (with the window size) in both ends so that transient parts are minimized
+    in the begining and end part of the output signal.
+    input:
+       x: the input signal 
+       window_len: the dimension of the smoothing window; should be an odd integer
+       window: the type of window from 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'
+          flat window will produce a moving average smoothing.
+     output:
+       the smoothed signal
+       
+    example:
+    t=linspace(-2,2,0.1)
+    x=sin(t)+randn(len(t))*0.1
+    y=smooth(x)
+    see also: 
+    numpy.hanning, numpy.hamming, numpy.bartlett, numpy.blackman, numpy.convolve
+    scipy.signal.lfilter
+    TODO: the window parameter could be the window itself if an array instead of a string
+    NOTE: length(output) != length(input), to correct this: return y[(window_len/2-1):-(window_len/2)] instead of just y.
+"""
+    if x.ndim != 1:
+        raise ValueError, "smooth only accepts 1 dimension arrays."
+    if x.size < window_len:
+        raise ValueError, "Input vector needs to be bigger than window size."
+    if window_len<3:
+        return x
+    if not window in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
+        raise ValueError, "Window is on of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'"
+    s=np.r_[x[window_len-1:0:-1],x,x[-1:-window_len:-1]]
+    #print(len(s))
+    if window == 'flat': #moving average
+        w=np.ones(window_len,'d')
+    else:
+        w=eval('np.'+window+'(window_len)')
+    y=np.convolve(w/w.sum(),s,mode='valid')
+    return y[(window_len/2-1):-(window_len/2)]
+
+#MAIN PROGRAM
+
+with open('10_11_2012.csv','rb') as engine_test_data:
+    
+    converted_data = csv.reader(engine_test_data)
+    labels=converted_data.next()
+    print labels
+    
+    useful_data=np.array([[float(data_row[0]),float(data_row[3]),float(data_row[6]),float(data_row[9])]
+                          for data_row in converted_data])
+    
+    start_time = useful_data[0,0]
+    
+    time_secs = useful_data[:, 0] - start_time
+    
+    thrust_lbs=useful_data[:,1]
+    
+    engine_pressure_psi=useful_data[:,2]
+    
+    tank_pressure_psi=useful_data[:,3]
+    
+    freq_hz=np.fft.fftfreq(len(time_secs),d=time_secs[1]-time_secs[0])
+    
+    thrust_fft=np.fft.fft(thrust_lbs)
+    
+    smooth_thrust=smooth(thrust_lbs,window_len=len(time_secs)/8)
+    
+    smooth_thrust_fft=np.fft.fft(smooth_thrust)
+    
+    thrust_noise=thrust_lbs-smooth_thrust
+    
+    thrust_noise=thrust_noise-sum(thrust_noise)/len(thrust_noise)
+    
+    thrust_noise_spec=np.fft.fft(thrust_noise)
+    #TODO: Use a rolling window 
+    
+    #Thrust Plot
+    """fig=plt.figure()
+    fig.suptitle('Thrust Curve', fontsize=14, fontweight='bold')
+    sub_fig=fig.add_subplot(111)
+    sub_fig.plot(time_secs, thrust_lbs, 'k')
+    sub_fig.set_xlabel('Time (s)')
+    sub_fig.set_ylabel('Thrust (lb)')
+    sub_fig.text(5, 150, ' Burntime: ~30 seconds \n Average Liquid-State Thrust: ~95 lbs \n Total Impulse: ~10400 Ns', bbox={'facecolor':'red', 'alpha':0.5, 'pad':10})"""
+    
+    #Tank Pressure Plot
+    """fig=plt.figure()
+    fig.suptitle('Tank Pressure', fontsize=14, fontweight='bold')
+    sub_fig=fig.add_subplot(111)
+    sub_fig.plot(time_secs, tank_pressure_psi, 'k')
+    sub_fig.set_xlabel('Time (s)')
+    sub_fig.set_ylabel('Oxidizer Tank Pressure (psi)')
+    sub_fig.text(2, 150, ' Initial Pressure: ~450 psi \n Onset of gas phase: ~18 s, ~287 psi', bbox={'facecolor':'red', 'alpha':0.5, 'pad':10})"""
+    
+    #Combustion Pressure Plot
+    """fig=plt.figure()
+    fig.suptitle('Combustion Pressure', fontsize=14, fontweight='bold')
+    sub_fig=fig.add_subplot(111)
+    sub_fig.plot(time_secs, engine_pressure_psi, 'k')
+    sub_fig.set_xlabel('Time (s)')
+    sub_fig.set_ylabel('Combustion Chamber Pressure (psi)')
+    sub_fig.text(2, 150, ' Ignition Spike: ~250 psi \n Equilibrium Pressure: ~100 psi', bbox={'facecolor':'red', 'alpha':0.5, 'pad':10})"""
+    
+    #Pressure Drop Plot
+    """fig=plt.figure()
+    fig.suptitle('Pressure Drop', fontsize=14, fontweight='bold')
+    sub_fig=fig.add_subplot(111)
+    sub_fig.plot(time_secs, tank_pressure_psi - engine_pressure_psi, 'k')
+    sub_fig.set_xlabel('Time (s)')
+    sub_fig.set_ylabel('Pressure Drop (psi)')
+    sub_fig.set_ylim([0,450])
+    sub_fig.text(2, 150, ' Average Value: ~250 psi ', bbox={'facecolor':'red', 'alpha':0.5, 'pad':10})"""
+    
+    #Thrust+Smoothed Thrust Plot
+    """fig=plt.figure()
+    fig.suptitle('Thrust Curve; Raw and Smoothed', fontsize=14, fontweight='bold')
+    sub_fig=fig.add_subplot(111)
+    sub_fig.plot(time_secs, thrust_lbs, 'k', time_secs, smooth_thrust, 'r.')
+    sub_fig.set_xlabel('Time (s)')
+    sub_fig.set_ylabel('Thrust (lb)')
+    #sub_fig.set_ylim([5,450])
+    sub_fig.text(2, 150, ' Difference in Total Impulse: ~0.1 Ns ', bbox={'facecolor':'red', 'alpha':0.5, 'pad':10})"""
+    
+    #Thrust+Smoothed Thrust FT Plot
+    fig=plt.figure()
+    fig.suptitle('Thrust Spectrum; Raw and Smoothed', fontsize=14, fontweight='bold')
+    sub_fig=fig.add_subplot(111)
+    sub_fig.plot(freq_hz, thrust_fft, 'k', freq_hz, smooth_thrust_fft, 'r')
+    sub_fig.set_xlabel('Frequency (Hz)')
+    sub_fig.set_ylabel('Amplitude')
+    sub_fig.set_xlim([0,60])
+    sub_fig.set_ylim([-40000,40000])
+    sub_fig.text(10, 20000, ' Spectrum dominated by sinc contribution from ignition delta function \n Added contributions from aluminium discharge at ~2-5 Hz \n Additional \' white \' noise between 40 and 55 Hz ', bbox={'facecolor':'red', 'alpha':0.5, 'pad':10})
+    
+    #Noise Spectrum Plot
+    #plt.plot(freq_hz,thrust_noise_spec)
+    #plt.plot(time_secs,thrust_lbs,time_secs,smooth_thrust)
+    total_impulse_newton_secs=scint.simps(thrust_lbs,time_secs,even='avg')*4.44822162
+    smoothed_total_impulse_newton_secs=scint.simps(smooth_thrust,time_secs,even='avg')*4.44822162
+    print 'total impulse '+str(total_impulse_newton_secs)+' Ns'
+    print 'smoothed total impulse '+str(smoothed_total_impulse_newton_secs)+' Ns'
+    #print len(smooth_thrust)
+    #print len(thrust_lbs)
+    plt.show()

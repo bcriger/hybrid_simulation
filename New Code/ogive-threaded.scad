@@ -37,10 +37,11 @@ pitch=5;
 holed=3;
 reinforced=3;
 threadd=32;
-noser=5;
+noser=1;
+threaded=1;
 
-ogivenosecone();
-//base();
+//ogivenosecone();
+base();
 //fitcheck();
 
 // Fit check: quick print to test fit in body tube
@@ -60,7 +61,7 @@ function nosex0(r,l,rho,rn) = l-sqrt(pow(rho-rn,2)-pow(rho-r,2));
 function noseyt(rn,rho,r) = rn*(rho-r)/(rho-rn);
 function nosext(x0,rn,yt) = x0-sqrt(rn*rn-yt*yt);
 
-module ogive(d=bodyod,l=noseconeheight,fnl=180,fnr=24,rn=noser){
+module ogive(d=bodyod,l=noseconeheight,fnl=600,fnr=600,rn=noser){
 	r = d/2;
 	rho = ogiverho(r,l);
 	x0 = nosex0(r,l,rho,rn);
@@ -77,7 +78,7 @@ module ogive(d=bodyod,l=noseconeheight,fnl=180,fnr=24,rn=noser){
 	}
 }
 
-module ogivenosecone(diameter=bodyod,height=noseconeheight,wallt=wallt){
+module ogivenosecone(diameter=bodyod,height=noseconeheight,wallt=wallt,threaded=threaded){
 	factor=(diameter-2*wallt)/diameter;
 	difference(){
 		ogive(diameter,height);
@@ -89,7 +90,7 @@ module ogivenosecone(diameter=bodyod,height=noseconeheight,wallt=wallt){
 	}
 }
 
-module base(bodyid=bodyid,baseh=bodyid/2,threadh=bodyid/2,pitch=pitch,wallt=wallt,holed=holed,threadd=threadd,bottomt=bottomt){
+module base(bodyid=bodyid,baseh=bodyid/2,threadh=bodyid/2,pitch=pitch,wallt=wallt,holed=holed,threadd=threadd,bottomt=bottomt,threaded=threaded){
 	difference(){
 		union(){
 			translate([0,0,baseh-0.01]) trapezoidThread(length=threadh,pitchRadius=threadd/2-pitch/4,pitch=pitch);
@@ -106,6 +107,7 @@ module base(bodyid=bodyid,baseh=bodyid/2,threadh=bodyid/2,pitch=pitch,wallt=wall
 			translate([0,-reinforced/2,0]) cube([reinforced,reinforced,bodyid],center=true);
 		}
 }
+
 
 module baseneg(bodyid=bodyid,baseh=bodyid/2,threadh=bodyid/2,pitch=pitch,wallt=wallt,holed=holed,threadd=threadd){
 	trapezoidThreadNegativeSpace(length=threadh,pitchRadius=threadd/2-pitch/4,pitch=pitch,countersunk=0.05);
