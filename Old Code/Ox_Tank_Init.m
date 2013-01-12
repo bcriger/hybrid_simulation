@@ -20,6 +20,7 @@ elseif (tank_fluid_temperature_K > 0)
 end
 %reality check 
 if (tank_fluid_temperature_K > (36.0 + 273.15))
+    disp('Setting Tank temperature to 36 C, line 23 in Ox_Tank_Init')
     tank_fluid_temperature_K = 36.0 + 273.15;
 end
 tank_pressure_bar = tank_initial_pressure;
