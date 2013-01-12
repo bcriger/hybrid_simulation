@@ -27,7 +27,7 @@ N2O_Valve_Time = zeros(4, max_t);
 %Set the initial values of the controller valve
 N2O_Valve_Time(:,1) = [0,0,0,0];
 
-%loop that actually runs the simulation
+%
 for t_k=2:max_t
     if mod(t_k,20) == 0
         index = t_k/20;
