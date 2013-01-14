@@ -27,6 +27,11 @@ N2O_Tank_Time = zeros(21,max_t);
 N2O_Tank_Time(:,1) = Ox_Tank_Init(nox_prop);
 
 %6 combustion chamber properties to track:
+%{
+ Fuel Grain Port Diameter (m), Combustion Pressure (Bar),
+ Fuel Mass Flow Rate (kg/s), Thrust (N), O/F Ratio (dimensionless),
+ Exhaust Velocity (m/s)
+%}
 Comb_Chamber_Time = zeros(6,max_t);
 
 %Chamber parameters at t = 0:
@@ -42,6 +47,7 @@ for t_k=2:max_t
     Comb_Chamber_Time(:, t_k-1), ...
     N2O_Valve_Time(:, t_k-1), ...
     nox_prop, dt);
+
     Comb_Chamber_Time(:,t_k) = ...
         Comb_Chamber_Update(N2O_Tank_Time(:, t_k-1), ...
     Comb_Chamber_Time(:, t_k-1), ...

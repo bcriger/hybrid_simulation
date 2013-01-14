@@ -43,6 +43,7 @@ mof = m_ox_dot_m/m_fuel_dot_m2;
 Comb_Press_psi = Comb_Press * 14.7;
 
 %returns Isp * gravity, in s * m/s^2 (even though pressure is in psi)
+%From Simulation in RPA Lite:
 
 Go_Isp =    - 7.342389450519946e-001 * mof^4 ...
             + 6.683230205578385e-004 * mof^3 * Comb_Press_psi ...
@@ -64,6 +65,7 @@ Engine_Thrust = Go_Isp * (m_fuel_dot_m2 + m_ox_dot_m);
 
 CF = 1.4; %Dimensionless, see Sutton Figures 3.6, 3.6, 3.8
 Nozzle_TArea = pi * 0.010^2; %m^2
+
 Comb_Press = Engine_Thrust / (CF * Nozzle_TArea) / 100000; %Bar
 if (Comb_Press < 1)
     Comb_Press = 1;

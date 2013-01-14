@@ -1,4 +1,4 @@
-function Comb_Chamber = Comb_Chamber_Init;
+function Comb_Chamber = Comb_Chamber_Init
 
 %Initial Fuel Grain Dimensions
 Comb_Press = 1;
