@@ -1,3 +1,6 @@
+%This script is used to verify the Nitrous Oxide Tank simulation Only.
+%The complete Engine simulation is handled by "engine_script.m"
+
 %Nitrous Oxide Parameters
 pCrit = 72.51;     % critical pressure, Bar Abs 
 rhoCrit = 452.0;   % critical density, kg/m3 
@@ -15,7 +18,7 @@ max_t = length(t);  %sets a useful flag and variable
 %with respect to time
 N2O_Tank_Time = zeros(21,max_t); 
 %Set the initial values in the N2O the instant before engine firing
-N2O_Tank_Time(:,1) = Ox_Tank_InitV(nox_prop);
+N2O_Tank_Time(:,1) = Ox_Tank_Init(nox_prop);
 %this initializes the vctor that contains the resulting Combustion Chamber
 %parameters with respect to time
 Comb_Chamber_Time = zeros(6,max_t);
@@ -29,19 +32,28 @@ N2O_Valve_Time(:,1) = [0,0,0,0];
 
 %loop that actually runs the simulation
 for t_k=2:max_t
-    if mod(t_k,20) == 0
-        index = t_k/20;
-        Comb_Chamber_Time(2, t_k) = Validation_Data2(index,3);
-        Comb_Chamber_Time(1, t_k) = Validation_Data2(index,2);
-        Comb_Chamber_Time(3, t_k) = Validation_Data2(index,6);
-    else
+%The purposeof this if/else loop appears to have been lost, as no evidence
+%of 'Validation_Data2(something, something) can be found.  Likely, it was
+%supposed to be a way to update these variables overtime, and just use them
+%for 20 iterations.
+
+%     if mod(t_k,20) == 0
+%         index = t_k/20
+%         Comb_Chamber_Time(2, t_k) = Validation_Data2(index,3);
+%         Comb_Chamber_Time(1, t_k) = Validation_Data2(index,2);
+%         Comb_Chamber_Time(3, t_k) = Validation_Data2(index,6);
+%     else
+        
+        %Makes the Combustion Pressure the same as the previous iteration
         Comb_Chamber_Time(2, t_k) = Comb_Chamber_Time(2, t_k-1);
+        %Makes the Fuel Grain Radius the same as the previous iteration
         Comb_Chamber_Time(1, t_k) = Comb_Chamber_Time(1, t_k-1);
+        %Makes the Mass of Fuel lost the same as the previous iteration
         Comb_Chamber_Time(3, t_k) = Comb_Chamber_Time(3, t_k-1);
-    end    
+%    end    
         
     N2O_Tank_Time(:,t_k) = ...
-        Ox_Tank_UpdateV(N2O_Tank_Time(:, t_k-1), ...
+        Ox_Tank_Update(N2O_Tank_Time(:, t_k-1), ...
                             Comb_Chamber_Time(:, t_k-1), ...
                             N2O_Valve_Time(:, t_k-1), ...
                             nox_prop, dt);
