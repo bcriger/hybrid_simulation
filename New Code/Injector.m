@@ -8,17 +8,17 @@ classdef Injector
     end
     
     methods
-        function obj=set.num_holes(obj,num_holes)
-            assert(strcmp(class(p_init),'double')==1, 'The number of holes must be a real number')
-            obj.num_holes=p_init;
+        function obj=set.num_holes(obj,holes)
+            assert(strcmp(class(holes),'double')==1, 'The number of holes must be a real number')
+            obj.num_holes=holes;
         end
-        function obj=set.hole_diameter(obj,v_int)
-            assert(strcmp(class(v_int),'double')==1, 'The hole diameter must be a real number')
-            obj.hole_diameter=v_int;
+        function obj=set.hole_diameter(obj,d)
+            assert(strcmp(class(d),'double')==1, 'The hole diameter must be a real number')
+            obj.hole_diameter=d;
         end
-        function obj=set.length(obj,dens)
-            assert(strcmp(class(dens),'double')==1, 'The injector length must be a real number')
-            obj.length=dens;
+        function obj=set.length(obj,len)
+            assert(strcmp(class(len),'double')==1, 'The injector length must be a real number')
+            obj.length=len;
         end
     end
     

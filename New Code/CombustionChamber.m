@@ -1,5 +1,5 @@
 classdef CombustionChamber
-    %OXIDIZERTANK This class handles hybrid rocket oxidizer tanks.
+    %COMBUSTIONCHAMBER This class handles hybrid rocket combustion chambers.
    
     properties
         port_type='circular';

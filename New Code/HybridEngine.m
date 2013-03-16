@@ -8,9 +8,9 @@ classdef HybridEngine
         nozzle
         oxidizer_tank
         combustion_chamber
-        regression_rate_a=0.0127; %Proportionality constant from HDP to 
-                                  %produce regression rate in mm/s
-        regression_rate_n=0.65;   %Exponent from HDP, for G_o in N/(m^2*s)
+        regression_rate_a=0.0127; %Proportionality constant from HDP to
+        %produce regression rate in mm/s
+        regression_rate_n=0.65;   %Exponent from HDP, for G_o in kg/(m^2*s)
     end
     
     properties (Dependent)
@@ -19,6 +19,7 @@ classdef HybridEngine
     end
     
     methods
+        %% Setters
         function obj=set.nozzle(obj,noz)
             assert(strcmp(class(noz),'Nozzle')==1, ...
                 'The nozzle must be input as a Nozzle object, see Nozzle.m')
@@ -47,5 +48,73 @@ classdef HybridEngine
                 'The "n" coefficient for the regression rate calculation must be a real number.')
             obj.regression_rate_n=r_r_n;
         end
-    end    
+        %% Simulate Performance
+        function time_series=solve_dynamics(Engine,burn_time)
+            %We use ode45 to determine the evolution of the following parameters:
+            %    oxidizer tank pressure
+            %    oxidizer tank liquid density
+            %    oxidizer tank liquid mass
+            %    oxidizer tank temperature
+            %    chamber pressure 
+            %    fuel port radius
+            
+            %% First, gather initial parameters
+            initial_parameters=[Engine.oxidizer_tank.fluid_pressure_t;
+                Engine.oxidizer_tank.liquid_density_t;
+                Engine.oxidizer_tank.liquid_mass_t;
+                Engine.oxidizer_tank.fluid_temperature_t;
+                Engine.combustion_chamber.combustion_pressure_t;
+                Engine.combustion_chamber.port_radius_t];
+            [sim_time,sim_vars]=ode45(@(var_vec) dynamical_derivatives(Engine,var_vec),[0 burn_time],initial_parameters);
+            time_series=horzcat(sim_time, sim_vars);
+        end
+    end
 end
+function dynamical_derivatives(Engine, var_vec)
+%This function takes an engine object and a vector of variables and returns
+%the dynamical derivatives of those variables. This is meant for use in
+%ODE45 above.
+
+%% Give the variables in the vector names corresponding to their values
+tank_p = var_vec(1); tank_rho = var_vec(2); tank_m = var_vec(3);
+tank_t = var_vec(4); cham_p = var_vec(5); port_r = var_vec(6);
+
+d_tank_p_dt   = 
+d_tank_rho_dt = 
+d_tank_m_dt   = 
+d_tank_t_dt   = 
+d_cham_p_dt   = 
+
+delta_p=tank_p-cham_p;
+port_area=Engine.combustion_chamber.n_ports*pi*port_r^2;
+
+d_port_r_dt   = Engine.regression_rate_a*(ox_flux)^(Engine.regression_rate_n); %mm
+
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
