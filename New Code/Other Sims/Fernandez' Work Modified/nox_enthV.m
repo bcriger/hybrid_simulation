@@ -24,10 +24,11 @@ if 1 == strcmp(units, 'J_kg')
 elseif 1 == strcmp(units, 'J_kmol')
     % Perry's Chemical Engineers' Handbook Property Equations
     % Copied from MMF Thesis
+    Tr = T_Kelvin/tCrit;                     % reduced temperature
     J1 = 2.3215e7;      % heat of vapourization of N2O [J/kmol] coefficients
     J2 = 0.384;         % valid for Temp range [182.3K - 309.57 K]
     J3 = 0;
     J4 = 0;
     % heat of vapourization of N2O [J/kmol]
-    enthalpy = J1*(1 - T_Kelvin) ^ (J2 + J3*T_Kelvin + J4*T_Kelvin^2);    
+    enthalpy = J1*(1-Tr) ^ (J2+J3*Tr+J4*Tr);    
 end
