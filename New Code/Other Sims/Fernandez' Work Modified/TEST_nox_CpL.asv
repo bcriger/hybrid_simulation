@@ -1,0 +1,19 @@
+all_nox_prop = nox_prop;
+MW = all_nox_prop(6);
+Low_Temp = 182.3;
+High_Temp = 200;
+gran = 0.1;
+
+Temp_K = (Low_Temp:gran:High_Temp);
+CpL_J_kgK = zeros(size(Temp_K));
+CpL_J_kmolK = zeros(size(Temp_K));
+Error = zeros(size(Temp_K));
+
+for Temp_i = 1:1:size(Temp_K)
+    T_Kelvin = Temp_K(Temp_i);
+    CpL_J_kgK(Temp_i) = nox_CpL(T_Kelvin, 'J_kgK');
+    CpL_J_kmolK(Temp_i) = MW*nox_CpL(T_Kelvin, 'J_kmolK');
+    Error = abs(CpL_J_kgK(Temp_i)-
+end
+
+plot(Temp_K, CpL_J_kgK, Temp_K, CpL_J_kmolK);

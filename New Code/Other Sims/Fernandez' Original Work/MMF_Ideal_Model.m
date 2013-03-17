@@ -21,7 +21,7 @@ Cd = 0.425;             % discharge coefficient: Test 1
 % Cd = 0.09;              % Test 4
 Ainj = 0.0001219352;    % injector area [m^2]
 MW2 = 44.013;           % molecular weight of N2O
-V = 0.0354             % total tank volume [m^3]
+V = 0.0354;             % total tank volume [m^3]
 m_T = 6.4882;           % tank mass [kg]
 
 % Perry's Chemical Engineers' Handbook Property Equations
@@ -62,11 +62,9 @@ Q4 = 0.2882;
 
 % Initial conditions
 n_to = m_loaded/MW2;                                        % initial total N2O intank [kmol]
-Vhat_li = Q2^(1+(1-Ti/Q3)^Q4)/Q1                           % molar volume of liquid N2O [m^3/kmol]    
+Vhat_li = Q2^(1+(1-Ti/Q3)^Q4)/Q1;                           % molar volume of liquid N2O [m^3/kmol]    
 To = Ti;                                                    % initial temperature [K]   
 P_sato = exp(G1 + G2/To + G3*log(To) + G4*To^G5);           % initial vapour pressure of N2O [Pa]
-%n_go_num is +ve
-%n_go_den = (-P_sato*Vhat_li + R*To) is -ve!
 n_go = P_sato*(V - Vhat_li*n_to)/(-P_sato*Vhat_li + R*To);  % initial N2O gas [kmol]
 n_lo = (n_to*R*To - P_sato*V)/(-P_sato*Vhat_li + R*To);     % initial N2O liquid [kmol]
 
