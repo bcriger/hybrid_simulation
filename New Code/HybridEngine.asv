@@ -84,26 +84,19 @@ port_area=Engine.combustion_chamber.n_ports*pi*port_r^2;
 ox_flux=ox_flow/port_area;
 regression_rate=Engine.regression_rate_a*(ox_flux)^(Engine.regression_rate_n);
 
-%% Oxidizer pressure derivative 
-d_tank_p_dt   = 0;
+%% Chamber pressure derivative 
+d_tank_p_dt   = 
 
 %% liquid density derivative 
-d_tank_rho_dt = 0;
+d_tank_rho_dt = 
 
-%% remaining oxidizer mass derivative
+%% remaining oxidizer mass
+d_tank_m_dt   = 
+d_tank_t_dt   = 
+d_cham_p_dt   = 
+
 delta_p=tank_p-cham_p;
-injector_area=pi*(Engine.injector.hole_diameter/2.0)^2;
-D_loss = Engine.injector.loss_coefficient/(Engine.injector.num_holes*injector_area)^2;
-d_tank_m_dt = sqrt(2*delta_p*tank_rho/D_loss);
-
-%% oxidizer temperature derivative
-d_tank_t_dt   = 0;
-
-%% chamber pressure derivative
-d_cham_p_dt   = 0;
-
-%% fuel port radius derivative
-d_port_r_dt   = regression_rate;
+d_port_r_dt   = 
 
 end
 

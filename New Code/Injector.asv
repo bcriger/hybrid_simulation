@@ -22,8 +22,8 @@ classdef Injector
             obj.length=len;
         end
         function obj=set.loss_coefficient(obj,K)
-            assert(strcmp(class(K),'double')==1, 'The loss coefficient must be a real number')
-            obj.loss_coefficient=K;
+            assert(strcmp(class(K),'double')==1, 'The injector length must be a real number')
+            obj.length=K;
         end
     end
     
