@@ -40,7 +40,7 @@ tank_liquid_density = nox_Lrho(tank_fluid_temperature_K);
 tank_vapour_density = nox_Vrho(tank_fluid_temperature_K);
 tank_pressure_bar = nox_vp(tank_fluid_temperature_K);
 N2O_Tank(7) = tank_pressure_bar;
-mdot_tank_outflow2 = N2O_Flow_Rate(N2O_Tank, Comb_Chamber, N2O_Valve);
+mdot_tank_outflow2 = MMF_injector_model(N2O_Tank, Pe);
 
 if mdot_tank_outflow2 < .01
     mdot_tank_outflow_returned = mdot_tank_mass_returned_previous;

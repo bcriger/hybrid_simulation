@@ -2,26 +2,34 @@
 %Non Ideal (Peng-Robinson), High Pressure Equilibrium Model
 %Initial Conditions Calculation
 
-function [P_eq,n2v_eq,n2l_eq,y2_eq] = Model2_IC(y2guess,n_He,n_T,T_sur,V)
-R = 8314.3;         % universal gas constant [J/(kmol*K)]
+function N2O_Tank = PRF_Tank_Init()
+all_nox_prop = nox_prop;
+all_rocket_prop = Rocket_Prop();
 
-G1 = 96.512;        % vapour pressure of N2O [Pa] coefficients
-G2 = -4045;         % valid for Temp range [182.3 K - 309.57 K]
-G3 = -12.277;
-G4 = 2.886e-5;
-G5 = 2;
+MW2 = all_nox_prop(6);      % Molecular mass in g/mol
+R = all_nox_prop(7);        % Universal Gas Constant
+m_loaded = all_rocket_prop;    % N2O mass initially loaded into tank [kg]: Test 1
+% m_loaded = 16.23298;    % Test 2
+% m_loaded = 14.10076;    % Test 3
+% m_loaded = 23.62427;    % Test 4
+Ti = 286.5;             % initial temperature [K]: Test 1 
+% Ti = 278.5;             % Test 2
+% Ti = 271.5;             % Test 3
+% Ti = 291.3              % Test 4
+% Initial conditions
+V = 0.0354;             % total tank volume [m^3]
 
-Q1 = 2.781;         % liquid molar volume of N2O [m^3/kmol] coefficients
-Q2 = 0.27244;
-Q3 = 309.57;
-Q4 = 0.2882;
+T_sur = Ti;
+n_T = m_loaded/MW2;
 
-Vhat_l = Q2^(1+(1-T_sur/Q3)^Q4)/Q1;     % liquid molar volume of N2O [m^3/kmol]
-Psat = exp(G1 + G2/T_sur + G3*log(T_sur) + G4*T_sur^G5);
+Vhat_l = 1/nox_Lrho(T_sur, 'mol_m3');     
+    % liquid molar volume of N2O [m^3/kmol]
+Psat = nox_vp(T_sur, 'Pa');
     % Ideal correlation of pure N2O vapour pressure [Pa]
 n2vo = Psat*(V - Vhat_l*n_T)/(-Psat*Vhat_l + R*T_sur);
     % Guess initial N2O vapour [kmol] based on ideal correlation
-presso = Psat/y2guess;
+%presso = Psat/y2guess;
+presso = Psat;
     %Guess initial pressure in tank [Pa] based on ideal assumption
     %(Raoults's Law)
 
@@ -62,7 +70,7 @@ n2v = zeros(100,1);         % blank matrix to store n_2v values
 press = zeros(100,1);       % blank matrix to store P values
 pbar = zeros(100,1);        % blank matirx to store Pbar values
 
-Y2(1,1) = y2guess;
+Y2(1,1) = 1;
 n2v(1,1) = n2vo;
 press(1,1) = presso;
 pbar(1,1) = presso/Pscale;
@@ -90,69 +98,13 @@ for k = 1:100       % iteration number
         
         % Liquid - Pure
         % Z_21^3 + c2*Z_21^2 + c1*Z_21 + c0 = 0
-        
-        A2 = P*a2/(R*T_sur)^2      % Sandler p.251
+
+        A2 = P*a2/(R*T_sur)^2;      % Sandler p.251
         B2 = P*b2/(R*T_sur);
         
-        c2 = -(1-B2);
-        c1 = (A2 - 3*B2^2 - 2*B2);
-        c0 = -(A2*B2 - B2^2 - B2^3);
-        
-        ql = c1/3 - c2^2/9;
-        rl = (c1*c2 - 3*c0)/6 - c2^3/27;
-        qrl = ql^3 + rl^2;
-        
-        % loop for finding Z_21
-        if qrl > 0                % Case 1: 1 real root
-            rpqrl = rl + qrl^0.5;
-            rmqrl = rl - qrl^0.5;
-            if rpqrl>=0
-                s1 = rpqrl^(1/3);
-            else
-                s1 = -(abs(rpqrl)^(1/3));
-            end
-            if rmqrl >= 0
-                s2 = rmqrl^(1/3);
-            else
-                s2 = -(abs(rmqrl)^(1/3));
-            end
-            Z_2l = s1 + s2 - c2/3;
-        elseif qrl ==0              % Case 2:  3 real roots, at least 2 equal
-            if rl >= 0
-                s1 = rl^(1/3);
-                s2 = rl^(1/3);
-            else
-                s1 = -(abs(r1))^(1/3);
-                s2 = -(abs(r1))^(1/3);
-            end
-            Z_2l_1 = s1 + s2 - c2/3;
-            Z_2l_2 = -0.5*(s1 + s2) - c2/3;
-            Z_2l = min([Z_2l_1 Z_2l_2]);
-        else
-            alpha = (abs(qrl))^0.5;
-            if rl > 0
-                th1 = atan(alpha/rl);
-            else
-                th1 = pi - atan(alpha/abs(rl));
-            end
-            th2 = atan2(alpha,rl);
-            if abs(th1 - th2) < 1e-14
-                th = th1;
-            else
-                disp('Liquid Thetas do not match');
-                break;
-                %pause;
-            end
-            rho = (rl^2 + alpha^2)^0.5;
-            Z_2l_1 = 2*rho^(1/3)*cos(th/3) - c2/3;
-            Z_2l_2 = -rho^(1/3)*cos(th/3) - c2/3 - sqrt(3)*rho^(1/3)*sin(th/3);
-            Z_2l_3 = -rho^(1/3)*cos(th/3) - c2/3 + sqrt(3)*rho^(1/3)*sin(th/3);
-            Z_2l = min([Z_2l_1 Z_2l_2 Z_2l_3]);
-        end
-
+        Z_2l = PR_Find_Z(A2, B2, 'l');
         % Gas - Mixture
         % Z_m^3 + d2*Z_m^2 + d1*Z_m + d0 = 0
-        
         k12 = 0;                                    % binary interaction parameter (He/N2O mix)
         a21 = sqrt(a1*a2)*(1-k12);                  % Sandler p.423
         am = (1-y2)^2*a1 + 2*y2*(1-y2)*a21 + y2^2*a2;
@@ -161,63 +113,8 @@ for k = 1:100       % iteration number
         Am = P*am/(R*T_sur)^2;                      % Sandler p.425
         Bm = P*bm/(R*T_sur);
         A2l = P*a21/(R*T_sur)^2;
-        
-        d2 = -(1-Bm);
-        d1 = (Am - 3*Bm^2 - 2*Bm);
-        d0 = -(Am*Bm - Bm^2 - Bm^3);
-        
-        qm = d1/3 - d2^2/9;
-        rm = (d1*d2 - 3*d0)/6 - d2^3/27;
-        qrm = qm^3 + rm^2;
-        
-        % loop for finding Z_m
-        if qrm > 0                                  % Case 1: 1 real root
-            rpqrm = rm + qrm^0.5;
-            rmqrm = rm - qrm^0.5;
-            if rpqrm>=0
-                s1m = rpqrm^(1/3);
-            else
-                s1m = -(abs(rpqrm)^(1/3));
-            end
-            if rmqrm>=0
-                s2m = rmqrm^(1/3);
-            else
-                s2m = -(abs(rmqrm)^(1/3));
-            end
-            Z_m = s1m + s2m - d2/3;
-        elseif qrm == 0                             % Case 2: 3 real roots, at least 2 equal
-            if rm >= 0
-                s1m = rm^(1/3);
-                s2m = rm^(1/3);
-            else
-                s1m = -(abs(rm))^(1/3);
-                s2m = -(abs(rm))^(1/3);
-            end
-            Z_m_1 = s1m + s2m - d2/3;
-            Z_m_2 = -0.5*(s1m + s2m) - d2/3;
-            Z_m = max([Z_m_1 Z_m_2]);
-        else                                        % Case 3: 3 real, distinct roots
-            alpham = (abs(qrm))^0.5;
-            if rm > 0
-                th1m = atan(alpham/rm);
-            else
-                th1m = pi - atan(alpham/abs(rm));
-            end
-            th2m = atan2(alpham,rm);            % double check angle with Matlab atan2 code
-            if abs(th1m - th2m) < 1e-14
-                thm = th1m;
-            else
-                disp('Mixture Thetas do not match');
-                break;
-                %pause;
-            end
-            rhom = (rm^2 + alpham^2)^0.5;
-            Z_m_1 = 2*rhom^(1/3)*cos(thm/3) - d2/3;
-            Z_m_2 = -rhom^(1/3)*cos(thm/3) - d2/3 - sqrt(3)*rhom^(1/3)*sin(thm/3);
-            Z_m_3 = -rhom^(1/3)*cos(thm/3) - d2/3 + sqrt(3)*rhom^(1/3)*sin(thm/3);
-            Z_m = max([Z_m_1 Z_m_2 Z_m_3]);
-        end
-
+        Z_m = PR_Find_Z(Am, Bm, 'm');
+               
         % Fugacity Coefficient Calculations
         % phi_2l: Sandler p.300
         % phi_2v: Sandler p.423
@@ -228,8 +125,8 @@ for k = 1:100       % iteration number
             log((Z_m+(1+sqrt(2))*Bm)/(Z_m+(1-sqrt(2))*Bm)));
         
         % Initial Solution Guess Calculation
-        f1(k,n) = (n_He + n_2v)*phi_2l - n_2v*phi_2v;
-        f2(k,n) = (n_He + n_2v)*Z_m + (n_T - n_2v)*Z_2l - P*V/(R*T_sur);
+        f1(k,n) = (n_2v)*phi_2l - n_2v*phi_2v;
+        f2(k,n) = (n_2v)*Z_m + (n_T - n_2v)*Z_2l - P*V/(R*T_sur);
     end
     
     % for derivative calculations
@@ -261,7 +158,7 @@ for k = 1:100       % iteration number
     n2v(k+1,1) = sol_new(1,1);
     pbar(k+1,1) = sol_new(2,1);
     press(k+1,1) = sol_new(2,1)*Pscale;
-    Y2(k+1,1) = n2v(k+1,1)/(n2v(k+1,1) + n_He);     % update y2
+    Y2(k+1,1) = n2v(k+1,1)/(n2v(k+1,1));     % update y2
     
     % Check errors
     del = ((n2v(k+1,1) - n2v(k,1))^2 + (pbar(k+1,1) - pbar(k,1))^2)^0.5;
@@ -273,7 +170,18 @@ for k = 1:100       % iteration number
         break
     end
 end
-P_eq = press(k+1,1);
-n2v_eq = n2v(k+1,1);
-n2l_eq = n_T - n2v(k+1,1);
-y2_eq = Y2(k+1,1); 
+tank_pressure_bar = press(k+1,1)/100000;
+n_go = n2v(k+1,1);
+n_lo = n_T - n2v(k+1,1);
+tank_volume = V;
+tank_fluid_temperature_K = Ti;
+tank_propellant_contents_mass = m_loaded;
+N2O_Tank = [tank_volume, ...                    % Set by MMF
+            tank_fluid_temperature_K, ...           % Set by MMF
+            0,0,0,0, ...
+            tank_pressure_bar, ...                  % Set by MMF in Bar, note:  MMF uses Pa!
+            tank_propellant_contents_mass, ...      % Set by MMF
+            0,0,0, ...                              % Not Used
+            n_lo, ...                               % number of liquid n2o moles        
+            n_go, ...                               % number of gaseous n2o moles    
+            0,0,0,0,0,0,0,0];

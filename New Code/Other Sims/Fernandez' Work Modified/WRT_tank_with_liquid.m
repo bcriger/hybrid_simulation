@@ -14,6 +14,8 @@ tank_pressure_bar                   = N2O_Tank(7);
 tank_propellant_contents_mass       = N2O_Tank(8);
 mdot_tank_outflow                   = N2O_Tank(11);
 
+all_nox_prop = nox_prop;
+MolMass = all_nox_prop(6);
 % Get enthalpy (latent heat) of vaporisation
 Enth_of_vap = nox_enthV(tank_fluid_temperature_K, 'J_kg');
 % Get specific heat capacity of the liquid nitrous
@@ -83,4 +85,6 @@ N2O_Tank(8) = tank_propellant_contents_mass;
 N2O_Tank(9) = tank_liquid_density;
 N2O_Tank(10) = tank_vapour_density;
 N2O_Tank(11) = mdot_tank_outflow2;
+N2O_Tank(12) = tank_liquid_mass/MolMass;
+N2O_Tank(13) = tank_vapour_mass/MolMass;
 end

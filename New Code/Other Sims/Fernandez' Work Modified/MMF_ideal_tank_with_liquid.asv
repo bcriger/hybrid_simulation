@@ -25,14 +25,21 @@ function N2O_Tank = MMF_ideal_tank_with_liquid(N2O_Tank, Pe, dt)
     To = tank_fluid_temperature_K;
     
     % Given functions of temperature:
-    Vhat_l = 1/(nox_Lrho(To, 'mol_m3'));    %molar specific volume of liquid N2O [m^3/kmol]
-    CVhat_g = nox_CpG(To, 'J_kmolK');       %specific heat of N2O gas at constant volume [J/(kmol*K)]
-    CVhat_l = nox_CpL(To, 'J_kmolK');       %specific heat of N2O liquid at constant volume, approx. same as at
-                                            %constant pressure [J/(kmol*K)] 
-    delta_Hv = nox_enthV(To, 'J_kmol');     % heat of vapourization of N2O [J/kmol]
-    P_sat = nox_vp(To, 'Pa');               % vapour pressure of N2O [Pa]
-    dP_sat = nox_vp(To, 'dPa_dT');          % derivative of vapour pressure wrt Temperature 
-    Cp_T = (4.8 + 0.00322*To)*155.239;      % specific heat of tank, Aluminum [J/(kg*K)]
+        %molar specific volume of liquid N2O [m^3/kmol]
+    Vhat_l = 1/(nox_Lrho(To, 'mol_m3'));
+        %specific heat of N2O gas at constant volume [J/(kmol*K)]
+    CVhat_g = nox_CpG(To, 'J_kmolK');
+        %specific heat of N2O liquid at constant volume, approx. same as at
+        %constant pressure [J/(kmol*K)] 
+    CVhat_l = nox_CpL(To, 'J_kmolK');       
+        % heat of vapourization of N2O [J/kmol]                                    
+    delta_Hv = nox_enthV(To, 'J_kmol');  
+        % vapour pressure of N2O [Pa]
+    P_sat = nox_vp(To, 'Pa'); 
+        % derivative of vapour pressure with respect to Temperature
+    dP_sat = nox_vp(To, 'dPa_dT'); 
+        % specific heat of tank, Aluminum [J/(kg*K)]
+    Cp_T = (4.8 + 0.00322*To)*155.239;      
     % Simplified expression definitions for solution
     P = (n_go)*R*To/(V-n_lo*Vhat_l);
     a = m_T*Cp_T + n_go*CVhat_g + n_lo*CVhat_l;

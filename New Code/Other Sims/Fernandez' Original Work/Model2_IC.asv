@@ -217,7 +217,7 @@ for k = 1:100       % iteration number
             Z_m_3 = -rhom^(1/3)*cos(thm/3) - d2/3 + sqrt(3)*rhom^(1/3)*sin(thm/3);
             Z_m = max([Z_m_1 Z_m_2 Z_m_3]);
         end
-
+        Z_m
         % Fugacity Coefficient Calculations
         % phi_2l: Sandler p.300
         % phi_2v: Sandler p.423
