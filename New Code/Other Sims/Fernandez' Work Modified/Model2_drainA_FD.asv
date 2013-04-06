@@ -191,22 +191,12 @@ CC = [Col1 Col5 Col3 Col4];
 DD = [Col1 Col2 Col5 Col4];
 EE = [Col1 Col2 Col3 Col5];
 
+dTdt   = det(BB)/det(AA);
 
-if det(AA) ~= 0 %Hacky statement added by Steve to fix odd errors
-    dTdt   = det(BB)/det(AA);
-    dPdt   = det(CC)/det(AA);
-    dn2ldt = det(DD)/det(AA);
-    dn2vdt = det(EE)/det(AA);
-elseif det(CC) == 0
-    dTdt   = det(BB);
-    dPdt   = det(CC);
-    dn2ldt = det(DD);
-    dn2vdt = det(EE);
-else
-    disp('Error finding dPdt')
-end
-
-
+if det(AA)
+dPdt   = det(CC)/det(AA);
+dn2ldt = det(DD)/det(AA);
+dn2vdt = det(EE)/det(AA);
 
 dx(1,1) = dTdt;
 dx(2,1) = dPdt;

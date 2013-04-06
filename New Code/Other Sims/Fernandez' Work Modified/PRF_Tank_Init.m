@@ -59,7 +59,7 @@ b2 = 0.0778*R*Tc2/Pc2;
 
 % Store values from each iteration
 % kth row = iteration number
-Y2 = zeros(100,1);          % blank matrix to store y2 values
+Y2 = ones(100,1);          % blank matrix to store y2 values
 n2v = zeros(100,1);         % blank matrix to store n_2v values
 press = zeros(100,1);       % blank matrix to store P values
 pbar = zeros(100,1);        % blank matirx to store Pbar values
@@ -92,7 +92,7 @@ for k = 1:100       % iteration number
         
         % Liquid - Pure
         % Z_21^3 + c2*Z_21^2 + c1*Z_21 + c0 = 0
-
+        
         A2 = P*a2/(R*T_sur)^2;      % Sandler p.251
         B2 = P*b2/(R*T_sur);
         
@@ -117,7 +117,7 @@ for k = 1:100       % iteration number
         phi_2v = exp((B2/Bm)*(Z_m-1) - log(Z_m - Bm) - (Am/(2*sqrt(2)*Bm))*...
             ((2*((1-y2)*A2l+y2*A2)/Am) - B2/Bm)*...
             log((Z_m+(1+sqrt(2))*Bm)/(Z_m+(1-sqrt(2))*Bm)));
-        
+           
         % Initial Solution Guess Calculation
         f1(k,n) = (n_2v)*phi_2l - n_2v*phi_2v;
         f2(k,n) = (n_2v)*Z_m + (n_T - n_2v)*Z_2l - P*V/(R*T_sur);
@@ -137,14 +137,19 @@ for k = 1:100       % iteration number
     
     % Update guesses for n_2v andP
     Pbar = P/Pscale;
-    dF1dn = (F1np - F1nm)/deltan2v;
+    dF1dn = (F1np - F1nm)/deltan2v;%
     dF1dP = (F1pp - F1pm)/deltaP;
-    dF1dPb = dF1dP*Pscale;
-    dF2dn = (F2np - F2nm)/deltan2v;
+    dF1dPb = dF1dP*Pscale;%
+    dF2dn = (F2np - F2nm)/deltan2v;%
     dF2dP = (F2pp - F2pm)/deltaP;
-    dF2dPb = dF2dP*Pscale;
+    dF2dPb = dF2dP*Pscale;%
     
-    JAC_inv = (1/(dF1dn*dF2dPb - dF1dPb*dF2dn))*[dF2dPb -dF1dPb; -dF2dn dF1dn];
+    Jac_den = dF1dn*dF2dPb - dF1dPb*dF2dn;
+    if Jac_den ~= 0
+        JAC_inv = (1/(Jac_den))*[dF2dPb -dF1dPb; -dF2dn dF1dn];
+    else
+        JAC_inv = zeros(2,2);
+    end
     F = [F1 F2]';
     
     sol_old = [n_2v Pbar]';             % old guess

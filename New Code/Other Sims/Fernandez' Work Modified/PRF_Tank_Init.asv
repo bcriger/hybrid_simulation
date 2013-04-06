@@ -6,18 +6,12 @@ function N2O_Tank = PRF_Tank_Init()
 all_nox_prop = nox_prop;
 all_rocket_prop = Rocket_Prop();
 
-MW2 = all_nox_prop(6);      % Molecular mass in g/mol
-R = all_nox_prop(7);        % Universal Gas Constant
-m_loaded = all_rocket_prop;    % N2O mass initially loaded into tank [kg]: Test 1
-% m_loaded = 16.23298;    % Test 2
-% m_loaded = 14.10076;    % Test 3
-% m_loaded = 23.62427;    % Test 4
-Ti = 286.5;             % initial temperature [K]: Test 1 
-% Ti = 278.5;             % Test 2
-% Ti = 271.5;             % Test 3
-% Ti = 291.3              % Test 4
-% Initial conditions
-V = 0.0354;             % total tank volume [m^3]
+MW2 =   all_nox_prop(6);        % Molecular mass in g/mol
+R =     all_nox_prop(7);        % Universal Gas Constant
+
+V =         all_rocket_prop(1);    % total tank volume [m^3]
+Ti =        all_rocket_prop(2);    % initial temperature [K]
+m_loaded =  all_rocket_prop(3);    % N2O mass initially loaded in tank [kg]
 
 T_sur = Ti;
 n_T = m_loaded/MW2;
@@ -65,7 +59,7 @@ b2 = 0.0778*R*Tc2/Pc2;
 
 % Store values from each iteration
 % kth row = iteration number
-Y2 = zeros(100,1);          % blank matrix to store y2 values
+Y2 = ones(100,1);          % blank matrix to store y2 values
 n2v = zeros(100,1);         % blank matrix to store n_2v values
 press = zeros(100,1);       % blank matrix to store P values
 pbar = zeros(100,1);        % blank matirx to store Pbar values
@@ -98,7 +92,7 @@ for k = 1:100       % iteration number
         
         % Liquid - Pure
         % Z_21^3 + c2*Z_21^2 + c1*Z_21 + c0 = 0
-
+        
         A2 = P*a2/(R*T_sur)^2;      % Sandler p.251
         B2 = P*b2/(R*T_sur);
         
@@ -123,10 +117,10 @@ for k = 1:100       % iteration number
         phi_2v = exp((B2/Bm)*(Z_m-1) - log(Z_m - Bm) - (Am/(2*sqrt(2)*Bm))*...
             ((2*((1-y2)*A2l+y2*A2)/Am) - B2/Bm)*...
             log((Z_m+(1+sqrt(2))*Bm)/(Z_m+(1-sqrt(2))*Bm)));
-        
+           
         % Initial Solution Guess Calculation
-        f1(k,n) = (n_2v)*phi_2l - n_2v*phi_2v;
-        f2(k,n) = (n_2v)*Z_m + (n_T - n_2v)*Z_2l - P*V/(R*T_sur);
+        f1(k,n) = (n_2v)*phi_2l - n_2v*phi_2v
+        f2(k,n) = (n_2v)*Z_m + (n_T - n_2v)*Z_2l - P*V/(R*T_sur)
     end
     
     % for derivative calculations
@@ -143,12 +137,12 @@ for k = 1:100       % iteration number
     
     % Update guesses for n_2v andP
     Pbar = P/Pscale;
-    dF1dn = (F1np - F1nm)/deltan2v;
+    dF1dn = (F1np - F1nm)/deltan2v;%
     dF1dP = (F1pp - F1pm)/deltaP;
-    dF1dPb = dF1dP*Pscale;
-    dF2dn = (F2np - F2nm)/deltan2v;
+    dF1dPb = dF1dP*Pscale;%
+    dF2dn = (F2np - F2nm)/deltan2v;%
     dF2dP = (F2pp - F2pm)/deltaP;
-    dF2dPb = dF2dP*Pscale;
+    dF2dPb = dF2dP*Pscale;%
     
     JAC_inv = (1/(dF1dn*dF2dPb - dF1dPb*dF2dn))*[dF2dPb -dF1dPb; -dF2dn dF1dn];
     F = [F1 F2]';

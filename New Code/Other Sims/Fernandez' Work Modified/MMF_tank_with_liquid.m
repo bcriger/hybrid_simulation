@@ -3,8 +3,10 @@ function N2O_Tank = MMF_tank_with_liquid(N2O_Tank, Comb_Chamber, N2O_Valve, dt)
 %Empty tank of liquid nitrous
 %blowdown simulation using nitrous oxide property calcs subroutines
 
+all_rocket_prop = Rocket_Prop();
+
 %update last-times values, O = 'old'
-tank_volume = N2O_Tank(1);
+tank_volume = all_rocket_prop(1);
 tank_fluid_temperature_K = N2O_Tank(2);
 tank_liquid_mass = N2O_Tank(3);
 tank_vapour_mass = N2O_Tank(4);
@@ -42,13 +44,13 @@ tank_pressure_bar = nox_vp(tank_fluid_temperature_K);
 N2O_Tank(7) = tank_pressure_bar;
 mdot_tank_outflow2 = MMF_injector_model(N2O_Tank, Pe);
 
-if mdot_tank_outflow2 < .01
-    mdot_tank_outflow_returned = mdot_tank_mass_returned_previous;
-elseif mdot_tank_outflow2 > mdot_tank_outflow * 1.1
-    mdot_tank_outflow_returned = mdot_tank_mass_returned_previous;
-else
-    mdot_tank_outflow_returned = mdot_tank_outflow2;
-end
+%if mdot_tank_outflow2 < .01
+%    mdot_tank_outflow_returned = mdot_tank_mass_returned_previous;
+%elseif mdot_tank_outflow2 > mdot_tank_outflow * 1.1
+%    mdot_tank_outflow_returned = mdot_tank_mass_returned_previous;
+%else
+%    mdot_tank_outflow_returned = mdot_tank_outflow2;
+%end
 
 tank_propellant_contents_mass  = ...
     tank_propellant_contents_mass - mdot_tank_outflow * dt;

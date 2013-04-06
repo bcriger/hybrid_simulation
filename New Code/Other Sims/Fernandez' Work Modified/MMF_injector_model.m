@@ -2,11 +2,10 @@ function mass_flowrate = MMF_injector_model(N2O_Tank, P2)
 %calculate injector pressure drop (Bar) and mass flowrate (kg/sec)
 %kg/sec 
     all_nox_prop = nox_prop;
+    all_rocket_prop = Rocket_Prop();
+    
     MolMass = all_nox_prop(6);
-    Cd = 0.425;                     % discharge coefficient: Test 1
-    % Cd = 0.365;                   % Test 2 and 3
-    % Cd = 0.09;                    % Test 4
-    Ainj = 0.0001219352;            % injector area [m^2]
+    Inj_Loss_Coeff = all_rocket_prop(11);
     
     tank_fluid_temperature_K    = N2O_Tank(2);
     tank_liquid_mass            = N2O_Tank(3);
@@ -26,7 +25,7 @@ function mass_flowrate = MMF_injector_model(N2O_Tank, P2)
     
 %     mass_flowrate = -Cd*Ainj*sqrt(2*(pressure_drop)*fluid_density);
     Lmol_density = (nox_Lrho(tank_fluid_temperature_K, 'kg_m3'))/MolMass;
-    mass_flowrate = Cd*Ainj*sqrt(2/MolMass)*sqrt((pressure_drop)*Lmol_density);
+    mass_flowrate = Inj_Loss_Coeff*sqrt(2/MolMass)*sqrt((pressure_drop)*Lmol_density);
     mass_flowrate = mass_flowrate*MolMass;
     %mass_flowrate = ...
     %    sqrt((2.0 * fluid_density * pressure_drop / inj_loss_coeff));
