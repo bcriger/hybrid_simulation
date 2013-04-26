@@ -191,7 +191,6 @@ CC = [Col1 Col5 Col3 Col4];
 DD = [Col1 Col2 Col5 Col4];
 EE = [Col1 Col2 Col3 Col5];
 
-
 if det(AA) ~= 0 %Hacky statement added by Steve to fix odd errors
     dTdt   = det(BB)/det(AA);
     dPdt   = det(CC)/det(AA);
@@ -205,8 +204,6 @@ elseif det(CC) == 0
 else
     disp('Error finding dPdt')
 end
-
-
 
 dx(1,1) = dTdt;
 dx(2,1) = dPdt;
@@ -229,4 +226,3 @@ dx(4,1) = dn2vdt;
     N2O_Tank(11) = m_loss;
     N2O_Tank(12) = n2l;
     N2O_Tank(13) = n2v;
-    N2O_Tank

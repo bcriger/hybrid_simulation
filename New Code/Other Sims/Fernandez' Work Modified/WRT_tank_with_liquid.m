@@ -41,16 +41,22 @@ end
 tank_liquid_density = nox_Lrho(tank_fluid_temperature_K, 'kg_m3');
 tank_vapour_density = nox_Vrho(tank_fluid_temperature_K);
 tank_pressure_bar = nox_vp(tank_fluid_temperature_K, 'Bar');
-N2O_Tank(7) = tank_pressure_bar;
-mdot_tank_outflow2 = N2O_Flow_Rate(N2O_Tank, Pe);
 
-if mdot_tank_outflow2 < .01
-    mdot_tank_outflow_returned = mdot_tank_mass_returned_previous;
-elseif mdot_tank_outflow2 > mdot_tank_outflow * 1.1
-    mdot_tank_outflow_returned = mdot_tank_mass_returned_previous;
+if tank_liquid_mass > tank_vapour_mass*1.1
+    mdot_tank_outflow = N2O_Flow_Rate(N2O_Tank, Pe);
+elseif tank_liquid_mass <= 0
+    mdot_tank_outflow = 0;
 else
-    mdot_tank_outflow_returned = mdot_tank_outflow2;
-end
+    mdot_tank_outflow = N2O_Tank(11);
+end    
+
+%if mdot_tank_outflow2 < .01
+%    mdot_tank_outflow_returned = mdot_tank_mass_returned_previous;
+%elseif mdot_tank_outflow2 > mdot_tank_outflow * 1.1
+%    mdot_tank_outflow_returned = mdot_tank_mass_returned_previous;
+%else
+%    mdot_tank_outflow_returned = mdot_tank_outflow2;
+%end
 
 tank_propellant_contents_mass  = ...
     tank_propellant_contents_mass - mdot_tank_outflow * dt;
@@ -69,22 +75,43 @@ tank_liquid_mass = (tank_volume - ...
     (tank_propellant_contents_mass / tank_vapour_density)) / bob;
 tank_vapour_mass = tank_propellant_contents_mass - tank_liquid_mass;
 
+%if (tank_vapour_mass < N2O_Tank(4))&&(N2O_Tank(4) < 0.01*MolMass)
+%    tank_vapour_mass = N2O_Tank(4);
+%end
+
 %update for next iteration
 tank_vapourized_mass_old2 = tank_liquid_mass_old - tank_liquid_mass;
 if tank_vapourized_mass_old2 < 0.0
     tank_vapourized_mass_old2 = 0;
 end
 
-%update tank contents for next iteration
-N2O_Tank(2) = tank_fluid_temperature_K;
-N2O_Tank(3) = tank_liquid_mass;
-N2O_Tank(4) = tank_vapour_mass;
-N2O_Tank(5) = mdot_tank_outflow_returned;
-N2O_Tank(6) = tank_vapourized_mass_old2;
-N2O_Tank(8) = tank_propellant_contents_mass;
-N2O_Tank(9) = tank_liquid_density;
-N2O_Tank(10) = tank_vapour_density;
-N2O_Tank(11) = mdot_tank_outflow2;
-N2O_Tank(12) = tank_liquid_mass/MolMass;
-N2O_Tank(13) = tank_vapour_mass/MolMass;
+if 100*mdot_tank_outflow*dt > tank_liquid_mass_old
+    
+    N2O_Tank(2) = N2O_Tank(2);
+    N2O_Tank(3) = 0;
+    N2O_Tank(4) = N2O_Tank(4);
+%    N2O_Tank(5) = 0;
+    N2O_Tank(6) = 0;
+    N2O_Tank(7) = N2O_Tank(7);
+    N2O_Tank(8) = N2O_Tank(8);
+    N2O_Tank(9) = N2O_Tank(9);
+    N2O_Tank(10) = N2O_Tank(10);
+%    N2O_Tank(11) = mdot_tank_outflow;
+    N2O_Tank(12) = 0;
+    N2O_Tank(13) = N2O_Tank(13);
+else
+    %update tank contents for next iteration
+    N2O_Tank(2) = tank_fluid_temperature_K;
+    N2O_Tank(3) = tank_liquid_mass;
+    N2O_Tank(4) = tank_vapour_mass;
+%    N2O_Tank(5) = mdot_tank_outflow_returned;
+    N2O_Tank(6) = tank_vapourized_mass_old2;
+    N2O_Tank(7) = tank_pressure_bar;
+    N2O_Tank(8) = tank_propellant_contents_mass;
+    N2O_Tank(9) = tank_liquid_density;
+    N2O_Tank(10) = tank_vapour_density;
+    N2O_Tank(11) = mdot_tank_outflow;
+    N2O_Tank(12) = tank_liquid_mass/MolMass;
+    N2O_Tank(13) = tank_vapour_mass/MolMass;
+    N2O_Tank(14) = 0;
 end

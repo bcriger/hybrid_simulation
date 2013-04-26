@@ -1,17 +1,21 @@
-function N2O_Tank = tank_no_liquid(N2O_Tank, Comb_Chamber, ...
-                                    N2O_Valve, dt)
+function N2O_Tank = tank_no_liquid(N2O_Tank, Pe, dt)
 %subroutine to model the tank emptying of vapour only
 %Isentropic vapour-only blowdown model
     %Basic Nitrous Oxide properties
-    pCrit = nox_prop(1);
-    ZCrit = nox_prop(4);
-    gamma = nox_prop(5);
+    all_nox_prop = nox_prop;
+    all_rocket_prop = Rocket_Prop;
+    
+    pCrit = all_nox_prop(1);
+    ZCrit = all_nox_prop(4);
+    gamma = all_nox_prop(5);
+    MW2   = all_nox_prop(6);
+        
     %obtain the required conditions in the combustion chamber,
     %nitrous oxide tank, and valve
     %Combustion Chamber Pressure in Bar
-    chamber_press_bar = Comb_Chamber(2);
-    %Tank Volume in Litres
-    tank_volume = N2O_Tank(1); 
+    chamber_press_bar = Pe;
+    %Tank Volume in m^3
+    tank_volume = all_rocket_prop(1); 
     %Fluid Temperature in Kelvin
     tank_fluid_temperature_K = N2O_Tank(2);
     %Mass of Fluid that is Liquid in kg
@@ -26,8 +30,9 @@ function N2O_Tank = tank_no_liquid(N2O_Tank, Comb_Chamber, ...
     tank_pressure_bar = N2O_Tank(7);
     %Sum of Liquid and Vapour in Nitrous Oxide Tank - check
     tank_propellant_contents_mass = N2O_Tank(8);
-    %Vapour Density in (Units to be checked)
+    %Vapour Density in kg/m^3
     tank_vapour_density = N2O_Tank(10);
+
     %Mass of oxidizer leaving the tank (kg/s)
     mdot_tank_outflow = N2O_Tank(11);
     %Mass of oxidizer leaving the tank from previous iteration (kg/s)
@@ -75,7 +80,7 @@ function N2O_Tank = tank_no_liquid(N2O_Tank, Comb_Chamber, ...
     
     % integrate mass flowrate using Addams second order integration formula 
     %Xn = X(n-1) + DT/2 * ((3 * Xdot(n-1) - Xdot(n-2)));
-    mdot_tank_outflow = N2O_Flow_Rate(N2O_Tank, Comb_Chamber, N2O_Valve);                                    
+    mdot_tank_outflow = N2O_Flow_Rate(N2O_Tank, Pe);                                    
     %delta_outflow_mass = 0.5 * dt * ...
     %    (3.0 * mdot_tank_outflow - mdot_tank_outflow_old);
     % drain the tank based on flowrates only
@@ -96,8 +101,10 @@ function N2O_Tank = tank_no_liquid(N2O_Tank, Comb_Chamber, ...
     OldAim = 2; 
     Aim = 0; % flags used below to home-in
     % recursive loop to get correct compressibility factor
-    while (((current_Z_guess / current_Z) > 1.000001) || ...
-        ((current_Z_guess / current_Z) < (1.0/ 1.000001)) );
+    iteration_count = 0;
+    while (((current_Z_guess / current_Z) > 1.0001) || ...
+        ((current_Z_guess / current_Z) < (1.0/ 1.0001)) || ...
+        (iteration_count<1000));
       %develop a guess for the tank fluid properties using an isentropic 
       %assumption
         %exponent used in following equaion
@@ -138,19 +145,23 @@ function N2O_Tank = tank_no_liquid(N2O_Tank, Comb_Chamber, ...
                 step = sqrt(step);
             end    
         end
+        iteration_count = iteration_count + 1;
     end
+    
     bob = 1.0 / (gamma - 1.0);
     tank_vapour_density = initial_vapour_density ...
         *((tank_fluid_temperature_K / initial_vapour_temp_K)^bob);
+  
     %Set Vapour Properties
     N2O_Tank(2) = tank_fluid_temperature_K;
     N2O_Tank(4) = tank_vapour_mass;
     N2O_Tank(6) = tank_vapour_mass_old;
     N2O_Tank(7) = tank_pressure_bar;
-    N2O_Tank(13) = tank_volume;
     N2O_Tank(8) = tank_propellant_contents_mass;
     N2O_Tank(10) = tank_vapour_density;
     N2O_Tank(11) = mdot_tank_outflow;
     N2O_Tank(21) = mdot_tank_outflow_old;
+    N2O_Tank(12) = 0;
+    N2O_Tank(13) = tank_vapour_mass/MW2;
     N2O_Tank(15) = first_vapour_it;
 end
