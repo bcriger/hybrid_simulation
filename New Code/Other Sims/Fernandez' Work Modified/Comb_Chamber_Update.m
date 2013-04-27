@@ -50,6 +50,14 @@ Comb_Press_psi = Comb_Press * 14.7;
 %returns Isp * gravity, in s * m/s^2 (even though pressure is in psi)
 %From Simulation in RPA Lite:
 
+%% Here, we derive chamber temperature, so we can formulate an update rule
+% for chamber pressure.
+
+%Code beginning at "Go_Isp" should be deprecated, derivative of pressure
+%wrt time should be inserted. You'll need to calculate the molar mass of
+%combustion gas, the specific heat capacity ratio and the combustion
+%chamber temperature/volume. 
+
 Go_Isp =    - 7.342389450519946e-001 * mof^4 ...
             + 6.683230205578385e-004 * mof^3 * Comb_Press_psi ...
             + 1.200563013892130e+001 * mof^3 ...
