@@ -56,9 +56,8 @@ elseif 1 == strcmp(Profile, 'WRT')
     Fuel_Port_Num = 1;
     Fuel_Density = 1190;        % Fuel density in kg/m^3
     Nozzle_TDiam = 0.02;        % Throat Diameter
-    Nozzle_EDiam = 0.04;        % Exit Diameter
-    Nozzle_TArea = pi*(Nozzle_TDiam/2)^2;
-    Nozzle_EArea = pi*(Nozzle_EDiam/2)^2;
+    Nozzle_EDiam = 0.04;        
+    Nozzle_TArea = pi * (Nozzle_TDiam/2)^2;
 end    
 rocket_prop = [
     N2O_Tank_V,...
@@ -72,7 +71,6 @@ rocket_prop = [
     Fuel_Port_Num,...
     Fuel_Density,...
     Nozzle_TArea,...
-    Nozzle_EArea,...
     Fuel_Port_OD
     ];
 end

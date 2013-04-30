@@ -2,8 +2,8 @@
 clear all
 clc
 % Forward Difference Time Loop
-tf = 15;                       % final time [s]
-dt = 0.001;                    % time step [s]
+tf = 0.05;                       % final time [s]
+dt = 0.01;                    % time step [s]
 i_f = tf/dt;
 time = (0+dt:dt:tf);
 %time = (0:dt:tf);
@@ -12,7 +12,7 @@ MMF_Tank_Time = zeros(21,t_length);
 %WRT_Tank_Time = zeros(21,i_f); 
 %PRF_Tank_Time = zeros(21,i_f);
 
-MMF_Comb_Time = zeros(8,t_length);
+MMF_Comb_Time = zeros(10,t_length);
 %WRT_Comb_Time = zeros(7,i_f);
 %PRF_Comb_Time = zeros(7,i_f);
 
@@ -30,7 +30,7 @@ MMF_Comb_Time(:,1) = Comb_Chamber_Init();
 for i=2:i_f;
     t = i*dt;
     % Curve fitted combustion chamber pressure [Pa]:
-    MMF_Comb_Time(:,i) = Comb_Chamber_Update(MMF_Tank_Time(:,i-1),...
+    MMF_Comb_Time(:,i) = Comb_Chamber_Update2(MMF_Tank_Time(:,i-1),...
                                              MMF_Comb_Time(:,i-1),... 
                                              dt);       
 %    PRF_Comb_Time(:,i) = Comb_Chamber_Update(PRF_Tank_Time(:,i-1),... 
@@ -43,21 +43,26 @@ for i=2:i_f;
 %    PRF_Pe = PRF_Comb_Time(2,i);
 %    WRT_Pe = WRT_Comb_Time(2,i);
     
-    liquid_mass = MMF_Tank_Time(3, i-1);
-    vapour_mass = MMF_Tank_Time(4, i-1);
-    if liquid_mass > 0.00001
+    liquid_mass_prior = MMF_Tank_Time(3, i-1);
+    vapour_mass_prior = MMF_Tank_Time(4, i-1);
+    fuel_mass_prior   = MMF_Comb_Time(8, i-1);
+    mass_prior = liquid_mass_prior + vapour_mass_prior + fuel_mass_prior;
+    if liquid_mass_prior > 0.00001
         MMF_Tank_Time(:,i) = MMF_ideal_tank_with_liquid(MMF_Tank_Time(:,i-1), MMF_Pe, dt);
 %       PRF_Tank_Time(:,i) = Model2_drainA_FD(PRF_Tank_Time(:,i-1), PRF_Pe, dt);
 %       WRT_Tank_Time(:,i) = WRT_tank_with_liquid(WRT_Tank_Time(:,i-1), WRT_Pe, dt);
-    elseif vapour_mass > 0.000001
+    elseif vapour_mass_prior > 0.000001
         MMF_Tank_Time(:,i) = tank_no_liquid(MMF_Tank_Time(:,i-1), MMF_Pe, dt);
     end
     liquid_mass = MMF_Tank_Time(3, i);
     vapour_mass = MMF_Tank_Time(4, i);
     fuel_mass = MMF_Comb_Time(8, i);
+    mass_now = liquid_mass + vapour_mass + fuel_mass;
     
-    MMF_Thrst_Mss(1,i) = MMF_Comb_Time(4);
-    MMF_Thrst_Mss(2,i) = liquid_mass + vapour_mass + fuel_mass; 
+    burn_rate = (mass_prior - mass_now)/dt;
+    
+    MMF_Thrst_Mss(1,i) = MMF_Comb_Time(4,i);
+    MMF_Thrst_Mss(2,i) = burn_rate; 
 end
 size(time)
 size(MMF_Tank_Time)

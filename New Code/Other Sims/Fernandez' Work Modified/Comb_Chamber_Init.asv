@@ -4,7 +4,7 @@ function Comb_Chamber = Comb_Chamber_Init
 all_rocket_prop = Rocket_Prop;
 FG_Len_m = all_rocket_prop(12);
 FG_ID_m = all_rocket_prop(13);
-FG_OD_m = all_rocket_prop(18);
+FG_OD_m = all_rocket_prop(17);
 FG_Den = all_rocket_prop(15);
 
 V = pi*(FG_OD_m^2 - FG_ID_m^2)*FG_Len_m;
