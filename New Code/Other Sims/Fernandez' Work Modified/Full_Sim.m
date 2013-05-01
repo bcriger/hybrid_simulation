@@ -2,7 +2,7 @@
 clear all
 clc
 % Forward Difference Time Loop
-tf = 0.05;                       % final time [s]
+tf = 15;                       % final time [s]
 dt = 0.01;                    % time step [s]
 i_f = tf/dt;
 time = (0+dt:dt:tf);
@@ -30,7 +30,7 @@ MMF_Comb_Time(:,1) = Comb_Chamber_Init();
 for i=2:i_f;
     t = i*dt;
     % Curve fitted combustion chamber pressure [Pa]:
-    MMF_Comb_Time(:,i) = Comb_Chamber_Update2(MMF_Tank_Time(:,i-1),...
+    MMF_Comb_Time(:,i) = Comb_Chamber_Update2(MMF_Tank_Time(:,i),...
                                              MMF_Comb_Time(:,i-1),... 
                                              dt);       
 %    PRF_Comb_Time(:,i) = Comb_Chamber_Update(PRF_Tank_Time(:,i-1),... 

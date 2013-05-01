@@ -9,7 +9,7 @@ V               = Comb_Chamber(9);
 rho             = Comb_Chamber(10);
 
 % Oxidizer mass flow rate
-mox_dot = N2O_Tank(11)
+mox_dot = N2O_Tank(11);
 
 all_rocket_prop = Rocket_Prop;
 FGl_m           = all_rocket_prop(12);    %fuel grain length, constant with time
@@ -19,10 +19,13 @@ Nozzle_TArea    = all_rocket_prop(16);    %m^2  old radius = 0.01m
 Nozzle_EArea    = all_rocket_prop(17);
 FG_OD_m         = all_rocket_prop(18);
 
-a = 0.00002788;
+%a = 0.00002788;
+a = 0.00041919;
 n = 0.8559;         %is usually between 0.4 and 0.7
 m = 0.55;           %is usually between 0 and 0.25
 l = 0.35;           %is usually between 0 and 0.7
+
+m = 0.125;          %try different m values
 
 %oxidizer mass flowrate per area kg/m^2-sec
 % Go_m =  mox_dot / (pi * FGr_m1^2);
@@ -36,7 +39,7 @@ P = Comb_Press*100000;  % Get from previous iteration, convert to Pa
 %oxidizer mass flowrate per area lbm/ft^2-sec - used in calc from sutton
 %Go_i = Go_m * 2.2046 * 10.7639;
 %Rate of change of Fuel Grain port diameter
-%FGrdot_i = a*2^l*pi^(-n)*mox_dot^n*P^m*r^(l-2*n);           %Inches/second?
+%FGrdot_i = a*2^l*pi^(-n)*mox_dot^n*P^m*r^(l-2*n);          %Inches/second?
 %Radius of Fuel Grain at time step
 %FGr_i2 = FGr_i1 + FGrdot_i * dt;    %Radius in inches
 %FGr_m2 = FGr_i2 * 0.0254;           %Radius in metres
@@ -66,7 +69,7 @@ q = 1000;   %[J/s] obtained from paper
 %linear equations
 aVV = (-n+1/2+l/2)*c_vol*mox_dot^n*P^m*V^(-n-3/2+l/2);
 aPV = m*c_vol*mox_dot^n*P^(m-1)*V^(-n+1/2+l/2);
-bMV = n*c_vol*mox_dot^(n-1)*P^m*V^(-n+1/2+l/2)
+bMV = n*c_vol*mox_dot^(n-1)*P^m*V^(-n+1/2+l/2);
 aVR = (-n-1/2+l/2)*(rho_fuel-rho)*c_vol*mox_dot^n*P^m*V^(-n-3/2+l/2)+...
     LAMDA*Nozzle_TArea*P^(1/2)*rho^(1/2)*V^(-2)-mox_dot*V^-2;
 aRR = -c_vol*mox_dot*P^m*V^(-n-1/2-l/2)- ...
@@ -87,9 +90,12 @@ CON_mat = [bMV; bMR; bMP];
 X_mat = [V; rho; P];
 X_mat_dot = SYS_mat*X_mat + CON_mat*mox_dot;
 X_mat = X_mat_dot*dt + X_mat;
-V   = X_mat(1,1);
-rho = X_mat(2,1);
-P   = X_mat(3,1);
+
+if mox_dot ~= 0
+    V   = X_mat(1,1);
+    rho = X_mat(2,1);
+    P   = X_mat(3,1);
+end
 
 % lamda:  Ratio between velocity in exit plane and velocity in throat area
 % solved iteratively
@@ -97,9 +103,9 @@ a1 = 1/(1-k);                               %the following are coeff's
 b1 = (1-k)/(1+k);                           %used to solve for lamda
 c1 = Nozzle_TArea/Nozzle_EArea*((k+1)/2)^a1;
 lamda_error = 1;
-lamda_i = 0;
+lamda_i = 1;
 iteration_count = 0;
-while(lamda_error > 0.001)||(iteration_count < 1000)
+while(lamda_error > 0.0001)||(iteration_count < 1000)
     lamda_iP1 = lamda_i - ((lamda_i - c1*(1 + b1)*lamda_i^2)^a1)/...
         (1 - 2*a1*b1*c1*lamda_i*(1+b1*lamda_i^2)^(a1-1));  
     lamda_error = abs(lamda_i - lamda_iP1)/lamda_iP1;
@@ -110,7 +116,7 @@ lamda = lamda_iP1;
 % Thrust Loss Coefficient
 sigma_c = 0.90;     % Obtained from same source as model.
 % Atmospheric Pressure
-P_atm = 100000;     %[Pa]
+P_atm = 101325;     %[Pa]
 
 Engine_Thrust = Nozzle_EArea*P_atm*(sigma_c*(P/P_atm)*...
     Nozzle_TArea/Nozzle_EArea*k*(2/(k+1)^(1/(k-1))*(lamda - 1)));
@@ -118,7 +124,7 @@ Engine_Thrust = Nozzle_EArea*P_atm*(sigma_c*(P/P_atm)*...
 total_impulse = total_impulse + Engine_Thrust*dt;
 
 %fuel_mass = fuel_mass - m_fuel_dot_m2*dt;
-Comb_Press = P/10000; %Pressure in Bar
+Comb_Press = P/100000; %Pressure in Bar
 
 %Comb_Chamber(1) = FGr_m2;
 Comb_Chamber(2) = Comb_Press;
