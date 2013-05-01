@@ -2,7 +2,7 @@
 clear all
 clc
 % Forward Difference Time Loop
-tf = 0.1;                       % final time [s]
+tf = 0.05;                       % final time [s]
 dt = 0.01;                    % time step [s]
 i_f = tf/dt;
 time = (0+dt:dt:tf);

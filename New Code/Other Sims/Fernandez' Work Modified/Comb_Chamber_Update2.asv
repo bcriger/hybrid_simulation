@@ -67,29 +67,29 @@ q = 1000;   %[J/s] obtained from paper
 %C_V = R/(k-1);
 
 %linear equations
-aVV = (-n+1/2+l/2)*c_vol*mox_dot^n*P^m*V^(-n-3/2+l/2);
+aVV = (-n+1/2+l/2)*c_vol*mox_dot^n*P^m*V^(-n-1/2+l/2);
 aPV = m*c_vol*mox_dot^n*P^(m-1)*V^(-n+1/2+l/2);
 bMV = n*c_vol*mox_dot^(n-1)*P^m*V^(-n+1/2+l/2);
-aVR = (-n-1/2+l/2)*(rho_fuel-rho)*c_vol*mox_dot^n*P^m*V^(-n-3/2+l/2)+...
-    LAMDA*Nozzle_TArea*P^(1/2)*rho^(1/2)*V^(-2)-mox_dot*V^-2;
-aRR = -c_vol*mox_dot*P^m*V^(-n-1/2-l/2)- ...
-    1/2*LAMDA*Nozzle_TArea*P^(1/2)*rho^(-1/2)*V^(-1);
-aPR = m*(rho_fuel-rho)*c_vol*mox_dot*P^(m-1)*V^(-n-1/2-l/2) ...
+aVR = (-n-1/2+l/2)*(rho_fuel-rho)*c_vol*mox_dot^n*P^m*V^(-n-3/2+l/2)...
+    +LAMDA*Nozzle_TArea*P^(1/2)*rho^(1/2)*V^(-2)-mox_dot*V^-2;
+aRR = -c_vol*mox_dot*P^m*V^(-n-1/2+l/2)...
+    -1/2*LAMDA*Nozzle_TArea*P^(1/2)*rho^(-1/2)*V^(-1);
+aPR = m*(rho_fuel-rho)*c_vol*mox_dot^n*P^(m-1)*V^(-n-1/2+l/2) ...
     -1/2*LAMDA*Nozzle_TArea*P^(-1/2)*rho^(1/2)*V^-1;
 bMR = n*(rho_fuel-rho)*c_vol*mox_dot^(n-1)*P^m*V^(-n-1/2+l/2)+V^(-1);
-aVP = (-n-1/2+l/2)*(k-1)*rho_fuel*Qcs*c_vol*mox_dot^n*P*m*V^(-n-3/2+l/2)...
+aVP = (-n-1/2+l/2)*(k-1)*rho_fuel*Qcs*c_vol*mox_dot^n*P^m*V^(-n-3/2+l/2)...
     +k*LAMDA*Nozzle_TArea*rho^(-1/2)*P^(3/2)*V^(-2)+(k-1)*q*V^(-2);
 aRP = 1/2*k*LAMDA*Nozzle_TArea*rho^(-3/2)*P^(3/2)*V^-1;
-aPP = m*(k-1)*rho_fuel*Qcs*c_vol*mox_dot*P^(m-1)*V^(-n-1/2+l/2) ...
+aPP = m*(k-1)*rho_fuel*Qcs*c_vol*mox_dot^n*P^(m-1)*V^(-n-1/2+l/2) ...
     -3/2*k*LAMDA*Nozzle_TArea*rho^(-1/2)*P^(1/2)*V^(-1);
 bMP = n*(k-1)*rho_fuel*Qcs*c_vol*mox_dot^(n-1)*P^m*V^(-n-1/2+l/2);
 % develop state-space equations for the engine
 SYS_mat = [aVV 0 aPV; aVR aRR aPR; aVP aRP aPP];
 CON_mat = [bMV; bMR; bMP];
 % set up the 'X' matrix, and determine the next values
-X_mat = [V; rho; P];
-X_mat_dot = SYS_mat*X_mat + CON_mat*mox_dot;
-X_mat = X_mat_dot*dt + X_mat;
+X_mat       = [V; rho; P];
+X_mat_dot   = SYS_mat*X_mat + CON_mat*mox_dot;
+X_mat       = X_mat_dot*dt + X_mat;
 
 if mox_dot ~= 0
     V   = X_mat(1,1);
