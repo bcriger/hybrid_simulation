@@ -10,27 +10,27 @@ time = (0+dt:dt:tf);
 t_length = size(time,2);
 MMF_Tank_Time = zeros(21,t_length);
 %WRT_Tank_Time = zeros(21,i_f); 
-%PRF_Tank_Time = zeros(21,i_f);
+% PRF_Tank_Time = zeros(21,i_f);
 
 MMF_Comb_Time = zeros(10,t_length);
 %WRT_Comb_Time = zeros(7,i_f);
-%PRF_Comb_Time = zeros(7,i_f);
+% PRF_Comb_Time = zeros(7,i_f);
 
 MMF_Thrst_Mss = zeros(2,t_length);
 
 %Set the initial values in the N2O the instant before engine firing
 MMF_Tank_Time(:,1) = MMF_Ox_Tank_Init();
-%PRF_Tank_Time(:,1) = PRF_Tank_Init();
+% PRF_Tank_Time(:,1) = PRF_Tank_Init();
 %WRT_Tank_Time(:,1) = MMF_Ox_Tank_Init();
 
 MMF_Comb_Time(:,1) = Comb_Chamber_Init();
-%PRF_Comb_Time(:,1) = Comb_Chamber_Init();
+% PRF_Comb_Time(:,1) = Comb_Chamber_Init();
 %WRT_Comb_Time(:,1) = Comb_Chamber_Init();
 
 for i=2:i_f;
     t = i*dt;
     % Curve fitted combustion chamber pressure [Pa]:
-    MMF_Comb_Time(:,i) = Comb_Chamber_Update2(MMF_Tank_Time(:,i-1),...
+    MMF_Comb_Time(:,i) = Comb_Chamber_Update(MMF_Tank_Time(:,i-1),...
                                              MMF_Comb_Time(:,i-1),... 
                                              dt);       
 %    PRF_Comb_Time(:,i) = Comb_Chamber_Update(PRF_Tank_Time(:,i-1),... 
@@ -39,7 +39,7 @@ for i=2:i_f;
 %    WRT_Comb_Time(:,i) = Comb_Chamber_Update(WRT_Tank_Time(:,i-1),... 
 %                                             MMF_Comb_Time(:,i-1),...
 %                                             dt);
-    MMF_Pe = MMF_Comb_Time(2,i);
+     MMF_Pe = MMF_Comb_Time(2,i);
 %    PRF_Pe = PRF_Comb_Time(2,i);
 %    WRT_Pe = WRT_Comb_Time(2,i);
     
@@ -72,7 +72,7 @@ figure(1), plot(time,MMF_Tank_Time(2,:),'r', ...                            %tim
     title('Temperature vs. Time'), ...
     xlabel('Time [s]'), ...
     ylabel('Temperature [K]'), ...
-    legend('MMF tank temperature', ...
+    legend('MMF Nitrous temperature', ...
             'WRT tank temperature', ...                                     %'MMF PR tank temperature', 
             1); 
 figure(2), plot(time,MMF_Tank_Time(13,:),'r',time,MMF_Tank_Time(12,:),'r', ... %time,PRF_Tank_Time(13,:),'b',time,PRF_Tank_Time(12,:),'b', ...time,WRT_Tank_Time(13,:),'k',time,WRT_Tank_Time(12,:),'k', ...
@@ -87,7 +87,7 @@ figure(3), plot(time,MMF_Tank_Time(7,:),'r', ...                            %tim
                 'LineWidth',2),grid, ...
     title('Pressure vs. Time'), ...
     xlabel('Time [s]'), ...
-    ylabel('Pressure [Pa]');
+    ylabel('Pressure [Bar]');
     legend('MMF tank pressure', ...
             'MMF comb pressure', ...                                       %'MMF PR tank pressure',...
             1); 
