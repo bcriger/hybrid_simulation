@@ -73,8 +73,10 @@ Comb_Press_psi = Pc * 14.7;
 %             + 2.100818858859686e+000 * Comb_Press_psi ...
 %             + 1.197510940958335e+003;
 
+
 %Engine_Thrust = Go_Isp *(9.81/32.2)* (m_fuel_dot_m2 + m_ox_dot_m);
 %Above code must change to rigourous pressure derivation.
+
 
 R = ;
 Tc = ;
@@ -83,17 +85,19 @@ Ab = ;
 Ax = ;
 k = ;
 
-dPC_dt = (R*Tc/Vo)*(mox_dot+(rho_fuel-Pc/(R*Tc))*Ab*a*(mox_dot/Ax)^n ...
-    -Pc*At*sqrt(k/(R*Tc))*(2/(k+1))^((k+1)/(2*(k-1))));
+
+dPC_dt = (R*Tc/Vo)*[mox_dot+(rho_fuel-Pc/(R*Tc))*Ab*a*(mox_dot/Ax)^n ...
+    -Pc*At*sqrt(k/(R*Tc))*(2/(k+1))^((k+1)/(2*(k-1)))];
 
 Pc = Pc + dPc_dt*dt;
-v_exit = ((2*k*R*Tc)/(k-1)*(1-(Patm/Pc)^((k-1)/k)))^(1/2);
-Ft = (mox_dot + mfuel_dot)*v_exit + (Pc-Patm)*Ae;
+v_exit = [(2*k*R*Tc)/(k-1)*(1-(Patm/Pc)^((k-1)/k))]^(1/2);
+
+
 
 %%  
-%total_impulse = total_impulse + Engine_Thrust*dt;
+total_impulse = total_impulse + Engine_Thrust*dt;
 
-%CF = 1.4; %Dimensionless, see Sutton Figures 3.6, 3.6, 3.8
+CF = 1.4; %Dimensionless, see Sutton Figures 3.6, 3.6, 3.8
 
 Pc = Engine_Thrust/(CF * Nozzle_TArea)/100000; %Bar
 if (Pc < 1)
