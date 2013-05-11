@@ -73,26 +73,15 @@ aVV = (-n+1/2+l/2)*c_vol*mox_dot^n*P^m*V^(-n-1/2+l/2);%BEN CHECK MAY 10
 aPV = m*c_vol*mox_dot^n*P^(m-1)*V^(-n+1/2+l/2);%BEN CHECK MAY 10
 bMV = n*c_vol*mox_dot^(n-1)*P^m*V^(-n+1/2+l/2);%BEN CHECK MAY 10
 aVR = (-n-1/2+l/2)*(rho_fuel-rho)*c_vol*mox_dot^n*P^m*V^(-n-3/2+l/2)...
-<<<<<<< HEAD
     +LAMDA*Nozzle_TArea*P^(1/2)*rho^(1/2)*V^(-2)-mox_dot*V^-2;%BEN CHECK MAY 10
 aRR = -c_vol*mox_dot*P^m*V^(-n-1/2+l/2)...
     -1/2*LAMDA*Nozzle_TArea*P^(1/2)*rho^(-1/2)*V^(-1);%BEN CHECK MAY 10
-=======
-    +LAMDA*Nozzle_TArea*P^(1/2)*rho^(1/2)*V^(-2)-mox_dot*V^-2;
-aRR = -c_vol*mox_dot^n*P^m*V^(-n-1/2+l/2)...
-    -1/2*LAMDA*Nozzle_TArea*P^(1/2)*rho^(-1/2)*V^(-1);
->>>>>>> 34ff27def1ccac1447ebd692ade7f00b6ab110b2
 aPR = m*(rho_fuel-rho)*c_vol*mox_dot^n*P^(m-1)*V^(-n-1/2+l/2) ...
     -1/2*LAMDA*Nozzle_TArea*P^(-1/2)*rho^(1/2)*V^-1;%BEN CHECK MAY 10
 bMR = n*(rho_fuel-rho)*c_vol*mox_dot^(n-1)*P^m*V^(-n-1/2+l/2)+V^(-1);%BEN CHECK MAY 10
 aVP = (-n-1/2+l/2)*(k-1)*rho_fuel*Qcs*c_vol*mox_dot^n*P^m*V^(-n-3/2+l/2)...
-<<<<<<< HEAD
     +k*LAMDA*Nozzle_TArea*rho^(-1/2)*P^(3/2)*V^(-2)+(k-1)*q*V^(-2);%BEN CHECK MAY 10
 aRP = 1/2*k*LAMDA*Nozzle_TArea*rho^(-3/2)*P^(3/2)*V^-1;%BEN CHECK MAY 10
-=======
-    +k*LAMDA*Nozzle_TArea*rho^(-1/2)*P^(3/2)*V^(-2)+(k-1)*q*V^(-2);
-aRP = 1/2*k*LAMDA*Nozzle_TArea*rho^(-3/2)*P^(3/2)*V^(-1);
->>>>>>> 34ff27def1ccac1447ebd692ade7f00b6ab110b2
 aPP = m*(k-1)*rho_fuel*Qcs*c_vol*mox_dot^n*P^(m-1)*V^(-n-1/2+l/2) ...
     -3/2*k*LAMDA*Nozzle_TArea*rho^(-1/2)*P^(1/2)*V^(-1);%BEN CHECK MAY 10
 bMP = n*(k-1)*rho_fuel*Qcs*c_vol*mox_dot^(n-1)*P^m*V^(-n-1/2+l/2);%BEN CHECK MAY 10
