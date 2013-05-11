@@ -1,6 +1,6 @@
 function Comb_Chamber = Comb_Chamber_Update(N2O_Tank, Comb_Chamber, dt)
-FGr_m1 = Comb_Chamber(1);   %prior iteration fuel grain diameter in metres
-FGr_i1 = FGr_m1/0.0254;      %prior iteration fuel grain diameter in inches   
+FGr_m1 = Comb_Chamber(1);   %prior iteration fuel grain radius in metres
+FGr_i1 = FGr_m1/0.0254;      %prior iteration fuel grain radius in inches   
 Comb_Press = Comb_Chamber(2);   %pressure in the combustion chamber
 m_fuel_dot_m1 = Comb_Chamber(3); %fuel mass flow rate in kg/s 
 total_impulse = Comb_Chamber(7);
@@ -11,13 +11,12 @@ FGl_m = all_rocket_prop(12);    %fuel grain length, constant with time
 Nports = all_rocket_prop(14);         %number of ports
 rho_fuel = all_rocket_prop(15);    %kg/m^3
 Nozzle_TArea = all_rocket_prop(16); %m^2  old radius = 0.01m
-FG_OD_m = all_rocket_prop(17  );
+FG_OD_m = all_rocket_prop(17);
 N2O_Tank_Pressure = N2O_Tank(7);
-%Comb_Press = N2O_Tank_Pressure * 0.8;
 
 %Fuel and Combustion Parameters
 m_ox_dot_m = N2O_Tank(11);         %oxidizer mass flow rate in kg/s 
-m_ox_dot_i = m_ox_dot_m * 2.2046;  %convert oxidzer mass flow rate to lb/s
+%m_ox_dot_i = m_ox_dot_m * 2.2046;  %convert oxidzer mass flow rate to lb/s
 
 a = 0.00002788;
 n = 0.8559;         %is usually between 0.4 and 0.7
@@ -27,8 +26,8 @@ l = 0.35;           %is usually between 0 and 0.7
 %oxidizer mass flowrate per area kg/m^2-sec
 Go_m =  m_ox_dot_m / (pi * FGr_m1^2);
 
-if Go_m == 0
-    Go_m = 0.000001;  %make sure we don't divide     by zero
+if Go_m <= 0
+    Go_m = 0.000001;  %make sure we don't divide by zero
 end
 
 %oxidizer mass flowrate per area lbm/ft^2-sec - used in calc from sutton
@@ -74,8 +73,11 @@ Go_Isp =    - 7.342389450519946e-001 * mof^4 ...
             + 2.100818858859686e+000 * Comb_Press_psi ...
             + 1.197510940958335e+003;
 
+
 Engine_Thrust = Go_Isp *(9.81/32.2)* (m_fuel_dot_m2 + m_ox_dot_m);
-%
+%Above code must change to rigourous pressure derivation.
+
+%%  
 total_impulse = total_impulse + Engine_Thrust*dt;
 
 CF = 1.4; %Dimensionless, see Sutton Figures 3.6, 3.6, 3.8
