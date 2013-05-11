@@ -73,16 +73,16 @@ bMV = n*c_vol*mox_dot^(n-1)*P^m*V^(-n+1/2+l/2);%BEN CHECK MAY 10
 aVR = (-n-1/2+l/2)*(rho_fuel-rho)*c_vol*mox_dot^n*P^m*V^(-n-3/2+l/2)...
     +LAMDA*Nozzle_TArea*P^(1/2)*rho^(1/2)*V^(-2)-mox_dot*V^-2;%BEN CHECK MAY 10
 aRR = -c_vol*mox_dot*P^m*V^(-n-1/2+l/2)...
-    -1/2*LAMDA*Nozzle_TArea*P^(1/2)*rho^(-1/2)*V^(-1);
+    -1/2*LAMDA*Nozzle_TArea*P^(1/2)*rho^(-1/2)*V^(-1);%BEN CHECK MAY 10
 aPR = m*(rho_fuel-rho)*c_vol*mox_dot^n*P^(m-1)*V^(-n-1/2+l/2) ...
-    -1/2*LAMDA*Nozzle_TArea*P^(-1/2)*rho^(1/2)*V^-1;
-bMR = n*(rho_fuel-rho)*c_vol*mox_dot^(n-1)*P^m*V^(-n-1/2+l/2)+V^(-1);
+    -1/2*LAMDA*Nozzle_TArea*P^(-1/2)*rho^(1/2)*V^-1;%BEN CHECK MAY 10
+bMR = n*(rho_fuel-rho)*c_vol*mox_dot^(n-1)*P^m*V^(-n-1/2+l/2)+V^(-1);%BEN CHECK MAY 10
 aVP = (-n-1/2+l/2)*(k-1)*rho_fuel*Qcs*c_vol*mox_dot^n*P^m*V^(-n-3/2+l/2)...
-    +k*LAMDA*Nozzle_TArea*rho^(-1/2)*P^(3/2)*V^(-2)+(k-1)*q*V^(-2);
-aRP = 1/2*k*LAMDA*Nozzle_TArea*rho^(-3/2)*P^(3/2)*V^-1;
+    +k*LAMDA*Nozzle_TArea*rho^(-1/2)*P^(3/2)*V^(-2)+(k-1)*q*V^(-2);%BEN CHECK MAY 10
+aRP = 1/2*k*LAMDA*Nozzle_TArea*rho^(-3/2)*P^(3/2)*V^-1;%BEN CHECK MAY 10
 aPP = m*(k-1)*rho_fuel*Qcs*c_vol*mox_dot^n*P^(m-1)*V^(-n-1/2+l/2) ...
-    -3/2*k*LAMDA*Nozzle_TArea*rho^(-1/2)*P^(1/2)*V^(-1);
-bMP = n*(k-1)*rho_fuel*Qcs*c_vol*mox_dot^(n-1)*P^m*V^(-n-1/2+l/2);
+    -3/2*k*LAMDA*Nozzle_TArea*rho^(-1/2)*P^(1/2)*V^(-1);%BEN CHECK MAY 10
+bMP = n*(k-1)*rho_fuel*Qcs*c_vol*mox_dot^(n-1)*P^m*V^(-n-1/2+l/2);%BEN CHECK MAY 10
 % develop state-space equations for the engine
 SYS_mat = [aVV 0 aPV; aVR aRR aPR; aVP aRP aPP];
 CON_mat = [bMV; bMR; bMP];
