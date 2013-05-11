@@ -54,24 +54,24 @@ P = Comb_Press*100000;  % Get from previous iteration, convert to Pa
 % Ratio of specific heats
 k = 1.5;    %obtained from source using PP fuel and n2o ox.
 %X = (V - V_i)/(V_f - V_i);
-c_vol = a*FGl_m^(n+1/2-l/2)*2^(n+1/2+l/2)*pi^(1/2-l/2);
+c_vol = a*FGl_m^(n+1/2-l/2)*2^(n+1/2+l/2)*pi^(1/2-l/2); %BEN CHECK MAY 10
 %delta_V = c_vol*mox_dot_i^n*V^(-n+1/2+l/2)*P_i^m;
 %V = V_i + X(V_f - V_i);
-LAMDA = sqrt(k*(2/(k+1))^((k+1)/(k-1)));
+LAMDA = sqrt(k*(2/(k+1))^((k+1)/(k-1))); %BEN CHECK MAY 10
 % Heat quantity ejected by burning reaction of 1kg of solid fuel
-Qcs = 2.5d6;  %[J/kg]
+Qcs = 2.5d6;  %[J/kg] %UNCHECKABLE
 % amount of heat transferred to the combustion chamber in time unit
-q = 1000;   %[J/s] obtained from paper
+q = 1000;   %[J/s] obtained from paper %UNCHECKABLE
 % gas constant in burning chamber
 %R = 336.6777; %[J/kg/K] - obtained from source using PP fuel and n2o ox.
 %C_V = R/(k-1);
 
 %linear equations
-aVV = (-n+1/2+l/2)*c_vol*mox_dot^n*P^m*V^(-n-1/2+l/2);
-aPV = m*c_vol*mox_dot^n*P^(m-1)*V^(-n+1/2+l/2);
-bMV = n*c_vol*mox_dot^(n-1)*P^m*V^(-n+1/2+l/2);
+aVV = (-n+1/2+l/2)*c_vol*mox_dot^n*P^m*V^(-n-1/2+l/2);%BEN CHECK MAY 10
+aPV = m*c_vol*mox_dot^n*P^(m-1)*V^(-n+1/2+l/2);%BEN CHECK MAY 10
+bMV = n*c_vol*mox_dot^(n-1)*P^m*V^(-n+1/2+l/2);%BEN CHECK MAY 10
 aVR = (-n-1/2+l/2)*(rho_fuel-rho)*c_vol*mox_dot^n*P^m*V^(-n-3/2+l/2)...
-    +LAMDA*Nozzle_TArea*P^(1/2)*rho^(1/2)*V^(-2)-mox_dot*V^-2;
+    +LAMDA*Nozzle_TArea*P^(1/2)*rho^(1/2)*V^(-2)-mox_dot*V^-2;%BEN CHECK MAY 10
 aRR = -c_vol*mox_dot*P^m*V^(-n-1/2+l/2)...
     -1/2*LAMDA*Nozzle_TArea*P^(1/2)*rho^(-1/2)*V^(-1);
 aPR = m*(rho_fuel-rho)*c_vol*mox_dot^n*P^(m-1)*V^(-n-1/2+l/2) ...
