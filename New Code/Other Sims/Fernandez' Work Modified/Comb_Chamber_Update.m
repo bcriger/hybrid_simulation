@@ -37,14 +37,15 @@ FGrdot_i = a * Go_i ^ n;            %Inches/second?
 %Radius of Fuel Grain at time step
 FGr_i2 = FGr_i1 + FGrdot_i * dt;    %Radius in inches
 FGr_m2 = FGr_i2 * 0.0254;           %Radius in metres
+
 %Mass of fuel burned at time step in kg/s
-m_fuel_dot_m2 = ...
-    Nports*pi*(FGr_m2^2-FGr_m1^2)*FGl_m*rho_fuel/dt;
+m_fuel_dot_m2 = Nports*pi*(FGr_m2^2-FGr_m1^2)*FGl_m*rho_fuel/dt;
 
 fuel_mass = fuel_mass - m_fuel_dot_m2*dt;
 
 mof = mox_dot/m_fuel_dot_m2;
 Comb_Press_psi = Pc * 14.7;
+Pc_Pa=Pc*1e5;
 
 %returns Isp * gravity, in s * m/s^2 (even though pressure is in psi)
 %From Simulation in RPA Lite:
@@ -76,29 +77,30 @@ Comb_Press_psi = Pc * 14.7;
 %Engine_Thrust = Go_Isp *(9.81/32.2)* (m_fuel_dot_m2 + m_ox_dot_m);
 %Above code must change to rigourous pressure derivation.
 
+Ax = pi*0.25(FGr_m2+FGr_m1)^2;%Average radius over time step
+Vo = Ax*FGl_m;
+Ab = pi*(FGr_m2+FGr_m1)*FGl_m; %Average radius over time step
 R = ;
 Tc = ;
-Vo = ;
-Ab = ;
-Ax = ;
 k = ;
 
-dPC_dt = (R*Tc/Vo)*(mox_dot+(rho_fuel-Pc/(R*Tc))*Ab*a*(mox_dot/Ax)^n ...
-    -Pc*At*sqrt(k/(R*Tc))*(2/(k+1))^((k+1)/(2*(k-1))));
+dPC_dt = (R*Tc/Vo)*(mox_dot+(rho_fuel-Pc/(R*Tc))*Ab*(FGrdot_i *0.0254) ...
+    -Pc_Pa*Nozzle_TArea*sqrt(k/(R*Tc))*(2/(k+1))^((k+1)/(2*(k-1))));
 
-Pc = Pc + dPc_dt*dt;
+Pc = Pc + dPc_dt*dt/1e5; %Convert dP/dt back from Pa to Bar
+Patm=1.01325; %Atmospheric Pressure in Bar! Yaaaaay!
 v_exit = ((2*k*R*Tc)/(k-1)*(1-(Patm/Pc)^((k-1)/k)))^(1/2);
-Ft = (mox_dot + mfuel_dot)*v_exit + (Pc-Patm)*Ae;
+Ft = (mox_dot + mfuel_dot)*v_exit + (Pc-Patm)*Ae*1e5; %Converting bars!
 
 %%  
-%total_impulse = total_impulse + Engine_Thrust*dt;
+total_impulse = total_impulse + Engine_Thrust*dt;
 
 %CF = 1.4; %Dimensionless, see Sutton Figures 3.6, 3.6, 3.8
 
-Pc = Engine_Thrust/(CF * Nozzle_TArea)/100000; %Bar
-if (Pc < 1)
-    Pc = 1;
-end
+%Pc = Engine_Thrust/(CF * Nozzle_TArea)/100000; %Bar
+%if (Pc < 1)
+%    Pc = 1;
+%end
 
 Comb_Chamber(1) = FGr_m2;
 Comb_Chamber(2) = Pc;
