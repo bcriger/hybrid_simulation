@@ -2,7 +2,7 @@
 clear all
 clc
 % Forward Difference Time Loop
-tf = 0.1;                       % final time [s]
+tf = 15;                       % final time [s]
 dt = 0.01;                    % time step [s]
 i_f = tf/dt;
 time = (0+dt:dt:tf);
@@ -97,7 +97,7 @@ figure(4), plot(time,MMF_Tank_Time(11,:)/44.013,'r', ...                   %time
     xlabel('Time [s]'), ...
     ylabel('N2O flowrate [kg/s]');
     legend('MMF N2O flowrate','WRT N2O flowrate',1);    
-figure(5), plot(time,MMF_Comb_Time(9,:),'r', ...                            %time,PRF_Comb_Time(4,:),'b',...time,WRT_Comb_Time(4,:),'k',...
+figure(5), plot(time,MMF_Comb_Time(4,:),'r', ...                            %time,PRF_Comb_Time(4,:),'b',...time,WRT_Comb_Time(4,:),'k',...
                 'LineWidth',2),grid, ...
     title('Engine Thrust vs. Time'), ...
     xlabel('Time [s]'), ...
@@ -105,4 +105,4 @@ figure(5), plot(time,MMF_Comb_Time(9,:),'r', ...                            %tim
     legend('MMF Engine Thrust','WRT Engine Thrust',1); 
 %figure(6), plot(time,WRT_Tank_Time(6,:),'r');
 MMF_Comb_Time(7,i_f)
-%WRT_Comb_Time(7,i_f)
+MMF_Comb_Time(7,i_f)/MMF_Thrst_Mss(2,2)

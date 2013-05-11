@@ -1,6 +1,5 @@
 function Comb_Chamber = Comb_Chamber_Update2(N2O_Tank, Comb_Chamber, dt)
 FGr_m1          = Comb_Chamber(1); %prior iteration fuel grain diameter in metres
-FGr_i1          = FGr_m1/0.0254;   %prior iteration fuel grain diameter in inches   
 Comb_Press      = Comb_Chamber(2); %pressure in the combustion chamber
 m_fuel_dot_m1   = Comb_Chamber(3); %fuel mass flow rate in kg/s 
 total_impulse   = Comb_Chamber(7);
@@ -25,7 +24,10 @@ n = 0.8559;         %is usually between 0.4 and 0.7
 m = 0.55;           %is usually between 0 and 0.25
 l = 0.35;           %is usually between 0 and 0.7
 
-m = 0.125;          %try different m values
+a = 0.22*10^-4;
+n = 0.68;
+m = 0.07;
+l = 0.09;   %try different m values
 
 %oxidizer mass flowrate per area kg/m^2-sec
 % Go_m =  mox_dot / (pi * FGr_m1^2);
@@ -34,7 +36,7 @@ m = 0.125;          %try different m values
 %     Go_m = 0.000001;  %make sure we don't divide by zero
 % end
 
-P = Comb_Press*100000;  % Get from previous iteration, convert to Pa
+P = Comb_Press;%*100000;  % Get from previous iteration, convert to Pa
 
 %oxidizer mass flowrate per area lbm/ft^2-sec - used in calc from sutton
 %Go_i = Go_m * 2.2046 * 10.7639;
@@ -72,14 +74,14 @@ aPV = m*c_vol*mox_dot^n*P^(m-1)*V^(-n+1/2+l/2);
 bMV = n*c_vol*mox_dot^(n-1)*P^m*V^(-n+1/2+l/2);
 aVR = (-n-1/2+l/2)*(rho_fuel-rho)*c_vol*mox_dot^n*P^m*V^(-n-3/2+l/2)...
     +LAMDA*Nozzle_TArea*P^(1/2)*rho^(1/2)*V^(-2)-mox_dot*V^-2;
-aRR = -c_vol*mox_dot*P^m*V^(-n-1/2+l/2)...
+aRR = -c_vol*mox_dot^n*P^m*V^(-n-1/2+l/2)...
     -1/2*LAMDA*Nozzle_TArea*P^(1/2)*rho^(-1/2)*V^(-1);
 aPR = m*(rho_fuel-rho)*c_vol*mox_dot^n*P^(m-1)*V^(-n-1/2+l/2) ...
     -1/2*LAMDA*Nozzle_TArea*P^(-1/2)*rho^(1/2)*V^-1;
 bMR = n*(rho_fuel-rho)*c_vol*mox_dot^(n-1)*P^m*V^(-n-1/2+l/2)+V^(-1);
 aVP = (-n-1/2+l/2)*(k-1)*rho_fuel*Qcs*c_vol*mox_dot^n*P^m*V^(-n-3/2+l/2)...
     +k*LAMDA*Nozzle_TArea*rho^(-1/2)*P^(3/2)*V^(-2)+(k-1)*q*V^(-2);
-aRP = 1/2*k*LAMDA*Nozzle_TArea*rho^(-3/2)*P^(3/2)*V^-1;
+aRP = 1/2*k*LAMDA*Nozzle_TArea*rho^(-3/2)*P^(3/2)*V^(-1);
 aPP = m*(k-1)*rho_fuel*Qcs*c_vol*mox_dot^n*P^(m-1)*V^(-n-1/2+l/2) ...
     -3/2*k*LAMDA*Nozzle_TArea*rho^(-1/2)*P^(1/2)*V^(-1);
 bMP = n*(k-1)*rho_fuel*Qcs*c_vol*mox_dot^(n-1)*P^m*V^(-n-1/2+l/2);
@@ -124,7 +126,11 @@ Engine_Thrust = Nozzle_EArea*P_atm*(sigma_c*(P/P_atm)*...
 total_impulse = total_impulse + Engine_Thrust*dt;
 
 %fuel_mass = fuel_mass - m_fuel_dot_m2*dt;
-Comb_Press = P/100000; %Pressure in Bar
+Comb_Press = P;%/100000; %Pressure in Bar
+
+% if Comb_Press < 1
+%     Comb_Press = 1;
+% end             
 
 %Comb_Chamber(1) = FGr_m2;
 Comb_Chamber(2) = Comb_Press;
