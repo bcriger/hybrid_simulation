@@ -22,8 +22,9 @@ if 1 == strcmp(Profile, 'MMF')
     A_inj = 0.0001219352;       % injector hole area [m^2]
     Inj_Loss_Coeff = C_D*A_inj;
 elseif 1 == strcmp(Profile, 'WRT')
-    N2O_Tank_V = 4.6/1000;
-    N2O_Ti = 291.3;
+%    N2O_Tank_V = 4.6/1000;    % volume in m^3
+    N2O_Tank_V = 0.004493;
+    N2O_Ti = 271.5;
     % Ti = 286.5;             % initial temperature [K]: Test 1 
     % Ti = 278.5;             % Test 2
     % Ti = 271.5;             % Test 3
@@ -50,9 +51,12 @@ elseif 1 == strcmp(Profile, 'WRT')
     A_inj = orifice_number*pi * ((orifice_diameter/2.0))^2;
     Inj_Loss_Coeff = A_inj/sqrt(K2_Coeff);
 %Combustion Chamber Parameters
-    Fuel_Grain_Length = 0.60;   % Fuel Grain Length in metres
-    Fuel_Port_Diam_i = 0.055;   % Initial Fuel Port Diameter: Complicated, because of the geometry. 50-60 mm.
-    Fuel_Port_OD = 0.1;         % Outer D of fuel m
+%    Fuel_Grain_Length = 0.60;   % Fuel Grain Length in metres
+    Fuel_Grain_Length = 24*.0254;    
+%    Fuel_Port_Diam_i = 0.055;   % Initial Fuel Port Diameter: Complicated, because of the geometry. 50-60 mm.
+    Fuel_Port_Diam_i = 1.25*0.0254;
+%   Fuel_Port_OD = 0.1;         % Outer D of fuel m
+    Fuel_Port_OD = 3.5*0.0254;    
     Fuel_Port_Num = 1;
     Fuel_Density = 1190;        % Fuel density in kg/m^3
     Nozzle_TDiam = 0.02;        % Throat Diameter
@@ -93,10 +97,10 @@ elseif 1 == strcmp(Profile, 'HRT')
     Fuel_Port_OD = 0.0145*2;        % Outer D of fuel m
     Fuel_Port_Num = 1;
     Fuel_Density = 900;         % Fuel density in kg/m^3
-    %Nozzle_TDiam = 0.02;        % Throat Diameter
-    %Nozzle_EDiam = 0.04;        % Exit Diameter
-    Nozzle_TArea = 0.397*10^-4;
-    Nozzle_EArea = 0.158*10^-3;
+    Nozzle_TDiam = 0.02;        % Throat Diameter
+    Nozzle_EDiam = 0.055;        % Exit Diameter
+    Nozzle_TArea = pi*(Nozzle_TDiam/2)^2;
+    Nozzle_EArea = pi*(Nozzle_EDiam/2)^2;
 end    
 rocket_prop = [
     N2O_Tank_V,...
